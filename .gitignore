@@ -1,0 +1,16 @@
+/.next/
+/build/
+/node_modules
+.DS_Store
+.env*.local
+.env
+.vercel
+*.tsbuildinfo
+next-env.d.ts
+npm-debug.log*
+
+/.husky
+
+# Contentlayer
+.contentlayer
+
