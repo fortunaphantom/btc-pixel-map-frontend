@@ -1,5 +1,5 @@
 import { sideMenuList } from "@/config/menu";
-import { useSidebarContext } from "@/context/SidebarContext";
+import { useSidebarContext } from "@/contexts/SidebarContext";
 import { Sidebar } from "flowbite-react";
 import { usePathname } from "next/navigation";
 import type { FC } from "react";

@@ -135,12 +135,8 @@ type Sig = {
 };
 
 type MintParam = {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  metadataUri: string;
-  signature: Sig;
+  address: string;
+  revealFee: number;
 };
 
 type TokenMetadata = {

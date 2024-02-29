@@ -1,7 +1,7 @@
 import { CollapsibleCard } from "@/components/common/CollapsibleCard";
 import { Loader } from "@/components/common/Loader";
 import { EXPLORER_URL } from "@/config";
-import { useCurrentTime } from "@/context/CurrentTimeContext";
+import { useCurrentTime } from "@/contexts/CurrentTimeContext";
 import { getHistory } from "@/helpers/api";
 import { formatRemainingInterval } from "@/helpers/time";
 import { Button, Dropdown, Table } from "flowbite-react";

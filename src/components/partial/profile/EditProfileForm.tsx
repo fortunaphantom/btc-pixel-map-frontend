@@ -1,6 +1,6 @@
 import ImageInput from "@/components/common/ImageInput";
 import ConfirmModal from "@/components/modal/ConfirmModal";
-import { useAuthContext } from "@/context/AuthContext";
+import { useAuthContext } from "@/contexts/AuthContext";
 import { uploadFile } from "@/helpers/api/upload";
 import { getUser } from "@/helpers/api/user";
 import { Button, Label, TextInput } from "flowbite-react";

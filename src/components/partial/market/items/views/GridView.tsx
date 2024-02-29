@@ -1,5 +1,5 @@
 import PixelCard from "@/components/partial/PixelCard";
-import { useSidebarContext } from "@/context/SidebarContext";
+import { useSidebarContext } from "@/contexts/SidebarContext";
 import { FC } from "react";
 import { twMerge } from "tailwind-merge";
 

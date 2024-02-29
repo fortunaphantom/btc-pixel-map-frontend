@@ -1,10 +1,25 @@
 {
   "cSpell.words": [
+    "BIADDRESS",
+    "bitcoinjs",
     "Classname",
+    "datasource",
     "datetimepicker",
     "flowbite",
     "Ipfs",
+    "ordit",
+    "ordzaar",
+    "Psbt",
     "rainbowkit",
-    "tailwindcss"
+    "satoshis",
+    "Sats",
+    "sonarjs",
+    "tailwindcss",
+    "unisat",
+    "Unspents",
+    "UTXOs",
+    "wpkh",
+    "Xmark",
+    "xverse"
   ]
 }

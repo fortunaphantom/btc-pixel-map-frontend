@@ -1,4 +1,4 @@
-import { useCurrentTime } from "@/context/CurrentTimeContext";
+import { useCurrentTime } from "@/contexts/CurrentTimeContext";
 import { formatNumberWithUnit, parseIpfsUrl } from "@/helpers";
 // import { dynamicBlurDataUrl } from "@/helpers/image";
 import { Card } from "flowbite-react";

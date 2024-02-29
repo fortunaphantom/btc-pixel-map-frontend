@@ -79,14 +79,3 @@ export const formatNumberWithUnit = (
     (item?.symbol ?? "")
   );
 };
-
-// export const formatBigIntWithUnits = (
-//   value: bigint,
-//   decimals: number = 18,
-//   displayDecimals: number = 2,
-// ) => {
-//   return formatNumberWithUnit(
-//     parseFloat(formatUnits(value, decimals)),
-//     displayDecimals,
-//   );
-// };

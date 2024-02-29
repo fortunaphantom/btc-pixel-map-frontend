@@ -1,4 +1,4 @@
-import { useCurrentTime } from "@/context/CurrentTimeContext";
+import { useCurrentTime } from "@/contexts/CurrentTimeContext";
 import { formatNumberWithUnit, parseIpfsUrl } from "@/helpers";
 import { formatRemainingInterval } from "@/helpers/time";
 import { Table } from "flowbite-react";

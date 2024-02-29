@@ -1,4 +1,4 @@
-import ContextProviders from "@/context";
+import ContextProviders from "@/contexts";
 import { Flowbite, ThemeModeScript } from "flowbite-react";
 import { Inter } from "next/font/google";
 import NextTopLoader from "nextjs-toploader";

@@ -1,6 +1,6 @@
 import ConformModal from "@/components/modal/ConfirmModal";
 import OfferModal from "@/components/modal/OfferModal";
-import { useCurrentTime } from "@/context/CurrentTimeContext";
+import { useCurrentTime } from "@/contexts/CurrentTimeContext";
 import { delay, timestampToDateTime } from "@/helpers/time";
 import { Button, Card } from "flowbite-react";
 import Link from "next/link";

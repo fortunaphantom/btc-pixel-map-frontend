@@ -1,9 +1,13 @@
-import { useSidebarContext } from "@/context/SidebarContext";
+import { useSidebarContext } from "@/contexts/SidebarContext";
 import { isSmallScreen } from "@/helpers/is-small-screen";
-import { ConnectMultiButton } from "bitcoin-wallet-adapter";
 import { DarkThemeToggle, Navbar } from "flowbite-react";
+import dynamic from "next/dynamic";
 import type { FC } from "react";
 import { HiMenuAlt1, HiX } from "react-icons/hi";
+
+const ConnectButton = dynamic(() => import("./ConnectButton"), {
+  ssr: false,
+});
 
 const AppNavbar: FC<Record<string, never>> = function () {
   const { isCollapsed: isSidebarCollapsed, setCollapsed: setSidebarCollapsed } =
@@ -37,15 +41,7 @@ const AppNavbar: FC<Record<string, never>> = function () {
               </Navbar.Brand>
             </div>
             <div className="flex justify-items-center gap-2">
-              <ConnectMultiButton
-                walletImageClass="w-[60px]"
-                walletLabelClass="pl-3 font-bold text-xl"
-                walletItemClass="border w-full md:w-6/12 cursor-pointer border-transparent rounded-xl mb-4 hover:border-green-500 transition-all"
-                headingClass="text-green-700 text-4xl pb-12 font-bold text-center"
-                modalContentClass="text-slate-100"
-                modalContainerClass="bg-slate-800 border border-slate-600 rounded-lg bwa-bg-black bwa-bg-opacity-75 bwa-h-screen bwa-w-full bwa_center"
-                buttonClassname="bg-green-300 hover:bg-green-400 rounded-xl flex items-center text-green-800 px-4 py-auto h-full font-bold"
-              />
+              <ConnectButton />
               <DarkThemeToggle />
             </div>
           </div>

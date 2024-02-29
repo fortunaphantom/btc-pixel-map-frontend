@@ -1,6 +1,6 @@
 import { Loader } from "@/components/common/Loader";
 import { EXPLORER_URL } from "@/config";
-import { useCurrentTime } from "@/context/CurrentTimeContext";
+import { useCurrentTime } from "@/contexts/CurrentTimeContext";
 import {
   // formatBigIntWithUnits,
   // shortenString,

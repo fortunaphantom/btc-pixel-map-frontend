@@ -1,6 +1,6 @@
 /* eslint-disable sonarjs/cognitive-complexity */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
-import { usePixelDataContext } from "@/context/PixelDataContext";
+import { usePixelDataContext } from "@/contexts/PixelDataContext";
 import { parseIpfsUrl } from "@/helpers";
 import { getMapImage } from "@/helpers/api";
 import { Button } from "flowbite-react";

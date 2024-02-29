@@ -2,11 +2,15 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import ConfirmModal from "@/components/modal/ConfirmModal";
 import ImageCropModal from "@/components/modal/ImageCropModal";
+import SelectFeeRate from "@/components/modal/SelectFeeRate";
+import { useConnect } from "@/contexts/WalletConnectProvider";
+import { getMintSign } from "@/helpers/api/mint";
 import { delay } from "@/helpers/time";
-import { Button, FileInput, Label, TextInput } from "flowbite-react";
-import { useRouter } from "next/navigation";
-import { FC, useCallback, useState } from "react";
+import { useFeeRecommended, useSend } from "@/hooks";
+import { Button, FileInput, FloatingLabel, Label } from "flowbite-react";
+import { FC, useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { FaEdit } from "react-icons/fa";
 import { HiChevronDoubleLeft, HiChevronDoubleRight } from "react-icons/hi";
 import { RiImageEditFill } from "react-icons/ri";
 import { twMerge } from "tailwind-merge";
@@ -40,13 +44,18 @@ export const MintPanel: FC<Props> = ({
   croppedImage,
   setCroppedImage,
 }) => {
-  const router = useRouter();
+  const { address } = useConnect();
+  const { send } = useSend();
 
   const [name, setName] = useState<string>();
   const [description, setDescription] = useState<string>();
   const [link, setLink] = useState<string>();
   const [cropOpen, setCropOpen] = useState<boolean>(false);
   const [originFile, setOriginFile] = useState<File>();
+
+  const feesRecommended = useFeeRecommended();
+  const [feeRate, setFeeRate] = useState<number>(1);
+  const [editFeeOpen, setEditFeeOpen] = useState<boolean>(false);
 
   // confirm modal
   const [confirmOpen, setConfirmOpen] = useState<boolean>(false);
@@ -55,12 +64,7 @@ export const MintPanel: FC<Props> = ({
   const [errorMessage, setErrorMessage] = useState<string>();
 
   const handleMint = useCallback(async () => {
-    if (
-      // !address ||
-      !name ||
-      !description ||
-      !link
-    ) {
+    if (!address?.ordinals || !name || !description || !link) {
       return;
     }
 
@@ -76,21 +80,22 @@ export const MintPanel: FC<Props> = ({
     setConfirmOpen(true);
     setErrorStep(undefined);
     setErrorMessage(undefined);
-    // let mintParam: MintParam;
+    let mintParam: MintParam;
     //generate mint param
     setActiveStep(0);
     try {
-      // mintParam = await getMintSign({
-      //   x: rect.x,
-      //   y: rect.y,
-      //   width: rect.width,
-      //   height: rect.height,
-      //   owner: address,
-      //   name,
-      //   description,
-      //   externalLink: link,
-      //   image: croppedImage,
-      // });
+      mintParam = await getMintSign({
+        x: rect.x,
+        y: rect.y,
+        width: rect.width,
+        height: rect.height,
+        name,
+        description,
+        externalLink: link,
+        image: croppedImage,
+        feeRate,
+        receiver: address.ordinals,
+      });
     } catch (error: unknown) {
       console.log(error);
       setErrorStep(0);
@@ -103,19 +108,14 @@ export const MintPanel: FC<Props> = ({
     setActiveStep(1);
 
     try {
-      // const { hash } = await mint({
-      //   args: [
-      //     mintParam.x,
-      //     mintParam.y,
-      //     mintParam.width,
-      //     mintParam.height,
-      //     mintParam.metadataUri,
-      //     mintParam.signature,
-      //   ],
-      // });
-      // await waitForTransaction({ hash });
+      const tx = await send(
+        mintParam.address,
+        mintParam.revealFee,
+        feeRate,
+        true,
+      );
+      console.log(tx);
       await delay(5000);
-      router.push("/");
     } catch (error: unknown) {
       console.log(error);
       setErrorStep(1);
@@ -124,15 +124,21 @@ export const MintPanel: FC<Props> = ({
     }
     setActiveStep(2);
   }, [
-    // address,
+    address.ordinals,
     croppedImage,
     description,
+    feeRate,
     link,
-    // mint,
     name,
     rect,
-    router,
+    send,
   ]);
+
+  useEffect(() => {
+    if (feesRecommended) {
+      setFeeRate(feesRecommended.hourFee);
+    }
+  }, [feesRecommended]);
 
   return (
     <>
@@ -156,7 +162,7 @@ export const MintPanel: FC<Props> = ({
             </h2>
           </header>
           <form
-            className="flex flex-col gap-4"
+            className="flex flex-col gap-2 py-2"
             onSubmit={(e) => {
               e.preventDefault();
               e.stopPropagation();
@@ -164,14 +170,10 @@ export const MintPanel: FC<Props> = ({
             }}
           >
             <div>
-              <div className="mb-2 block">
-                <Label htmlFor="position-x">Pixel X</Label>
-              </div>
-              <TextInput
-                id="position-x"
-                type="number"
+              <FloatingLabel
+                variant="outlined"
+                label="X"
                 sizing="sm"
-                placeholder="0"
                 value={rect?.x}
                 onChange={(e) =>
                   setRect({
@@ -185,14 +187,10 @@ export const MintPanel: FC<Props> = ({
               />
             </div>
             <div>
-              <div className="mb-2 block">
-                <Label htmlFor="position-y">Pixel Y</Label>
-              </div>
-              <TextInput
-                id="position-y"
-                type="number"
+              <FloatingLabel
+                variant="outlined"
+                label="Y"
                 sizing="sm"
-                placeholder="0"
                 value={rect?.y}
                 onChange={(e) =>
                   setRect({
@@ -206,14 +204,10 @@ export const MintPanel: FC<Props> = ({
               />
             </div>
             <div>
-              <div className="mb-2 block">
-                <Label htmlFor="position-w">Pixel Width</Label>
-              </div>
-              <TextInput
-                id="position-w"
-                type="number"
+              <FloatingLabel
+                variant="outlined"
+                label="Width"
                 sizing="sm"
-                placeholder="0"
                 value={rect?.width}
                 onChange={(e) =>
                   setRect({
@@ -227,14 +221,10 @@ export const MintPanel: FC<Props> = ({
               />
             </div>
             <div>
-              <div className="block">
-                <Label htmlFor="position-h">Pixel Height</Label>
-              </div>
-              <TextInput
-                id="position-h"
-                type="number"
+              <FloatingLabel
+                variant="outlined"
+                label="Height"
                 sizing="sm"
-                placeholder="0"
                 value={rect?.height}
                 onChange={(e) =>
                   setRect({
@@ -269,50 +259,47 @@ export const MintPanel: FC<Props> = ({
                 </div>
               </div>
             </div>
-            <hr className="mt-1 w-full border-gray-200 dark:border-gray-700 sm:mx-auto lg:mt-2"></hr>
+            <hr className="mb-1 w-full border-gray-200 dark:border-gray-700 sm:mx-auto lg:mb-2"></hr>
             <div>
-              <div className="mb-2 block">
-                <Label htmlFor="name">Name</Label>
-              </div>
-              <TextInput
-                id="name"
-                type="text"
+              <FloatingLabel
+                variant="outlined"
+                label="Name"
                 sizing="sm"
-                placeholder="Put pixel name here..."
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 required
               />
             </div>
             <div>
-              <div className="mb-2 block">
-                <Label htmlFor="description">Description</Label>
-              </div>
-              <TextInput
-                id="description"
-                type="text"
+              <FloatingLabel
+                variant="outlined"
+                label="Description"
                 sizing="sm"
-                placeholder="Put pixel description here..."
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 required
               />
             </div>
             <div>
-              <div className="mb-2 block">
-                <Label htmlFor="link">External Link</Label>
-              </div>
-              <TextInput
-                id="link"
-                type="text"
+              <FloatingLabel
+                variant="outlined"
+                label="Link"
                 sizing="sm"
-                placeholder="Put your link here..."
                 value={link}
                 onChange={(e) => setLink(e.target.value)}
                 required
               />
             </div>
-            <hr className="mt-1 w-full border-gray-200 dark:border-gray-700 sm:mx-auto lg:mt-2"></hr>
+            <hr className="mb-1 w-full border-gray-200 dark:border-gray-700 sm:mx-auto lg:mb-2"></hr>
+            <div className="flex w-full items-center justify-between">
+              <span className="text-slate-800 dark:text-white">
+                {feeRate} Sats/vByte
+              </span>
+              <div onClick={() => setEditFeeOpen(true)}>
+                <FaEdit className="h-5 w-5 cursor-pointer text-slate-800 dark:text-white" />
+              </div>
+            </div>
+            <hr className="mb-1 w-full border-gray-200 dark:border-gray-700 sm:mx-auto lg:mb-2"></hr>
             <Button type="submit">Mint Pixel</Button>
           </form>
         </div>
@@ -338,6 +325,12 @@ export const MintPanel: FC<Props> = ({
         handleRetry={() => handleMint()}
         handleContinue={() => setConfirmOpen(false)}
         successMessage="Pixel minted successfully"
+      />
+      <SelectFeeRate
+        isOpen={editFeeOpen}
+        setOpen={setEditFeeOpen}
+        feeRate={feeRate}
+        setFeeRate={setFeeRate}
       />
     </>
   );

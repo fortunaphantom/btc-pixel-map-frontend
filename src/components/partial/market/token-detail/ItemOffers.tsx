@@ -1,6 +1,6 @@
 import { CollapsibleCard } from "@/components/common/CollapsibleCard";
 import ConformModal from "@/components/modal/ConfirmModal";
-import { useCurrentTime } from "@/context/CurrentTimeContext";
+import { useCurrentTime } from "@/contexts/CurrentTimeContext";
 import { delay, formatRemainingInterval } from "@/helpers/time";
 import { Button, Table } from "flowbite-react";
 import Link from "next/link";

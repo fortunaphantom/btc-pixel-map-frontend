@@ -12,11 +12,12 @@ type CreatePayload = {
   y: number;
   width: number;
   height: number;
-  owner: string;
   name: string;
   description: string;
   externalLink: string;
   image: string;
+  feeRate: number;
+  receiver: string;
 };
 
 export const getMintSign = async (payload: CreatePayload) => {

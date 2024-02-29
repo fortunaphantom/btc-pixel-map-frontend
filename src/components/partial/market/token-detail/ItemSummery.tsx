@@ -1,4 +1,4 @@
-import { useAuthContext } from "@/context/AuthContext";
+import { useAuthContext } from "@/contexts/AuthContext";
 import { parseIpfsUrl } from "@/helpers";
 import { Card } from "flowbite-react";
 import Image from "next/image";
