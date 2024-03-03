@@ -5,7 +5,7 @@ import ImageCropModal from "@/components/modal/ImageCropModal";
 import SelectFeeRate from "@/components/modal/SelectFeeRate";
 import { useConnect } from "@/contexts/WalletConnectProvider";
 import { getMintSign } from "@/helpers/api/mint";
-import { delay } from "@/helpers/time";
+import { waitForReveal } from "@/helpers/ordinals/waitForReveal";
 import { useFeeRecommended, useSend } from "@/hooks";
 import { Button, FileInput, FloatingLabel, Label } from "flowbite-react";
 import { FC, useCallback, useEffect, useState } from "react";
@@ -24,6 +24,10 @@ const confirmSteps: ConfirmStep[] = [
     title: "Sign for transaction",
     description:
       "You'll be asked to review and confirm this transaction from your wallet.",
+  },
+  {
+    title: "Wait ordinal to be revealed",
+    description: "You need to wait while reveal transaction to be confirmed",
   },
 ];
 
@@ -107,22 +111,34 @@ export const MintPanel: FC<Props> = ({
     }
     setActiveStep(1);
 
+    let tx;
     try {
-      const tx = await send(
-        mintParam.address,
-        mintParam.revealFee,
-        feeRate,
-        true,
-      );
+      tx = await send(mintParam.address, mintParam.revealFee, feeRate, true);
       console.log(tx);
-      await delay(5000);
     } catch (error: unknown) {
       console.log(error);
       setErrorStep(1);
-      setErrorMessage((error as any)?.shortMessage ?? "Something went wrong.");
+      setErrorMessage(
+        (error as any)?.message ?? error ?? "Something went wrong.",
+      );
       return undefined;
     }
     setActiveStep(2);
+
+    try {
+      await waitForReveal(mintParam.address, tx!);
+      toast.success("Successfully minted new Pixels!");
+    } catch (error: any) {
+      console.log(error);
+      setErrorStep(2);
+      setErrorMessage(
+        error?.message ??
+          error?.response?.data?.reason ??
+          "Something went wrong.",
+      );
+      return undefined;
+    }
+    setActiveStep(3);
   }, [
     address.ordinals,
     croppedImage,

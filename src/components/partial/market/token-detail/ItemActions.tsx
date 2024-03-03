@@ -1,18 +1,13 @@
 import ConformModal from "@/components/modal/ConfirmModal";
 import OfferModal from "@/components/modal/OfferModal";
-import { useCurrentTime } from "@/contexts/CurrentTimeContext";
+import { useConnect } from "@/contexts/WalletConnectProvider";
 import { delay, timestampToDateTime } from "@/helpers/time";
 import { Button, Card } from "flowbite-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FC, useCallback, useMemo, useState } from "react";
 import toast from "react-hot-toast";
-import {
-  FaBagShopping,
-  FaClock,
-  FaFileInvoiceDollar,
-  FaWallet,
-} from "react-icons/fa6";
+import { FaBagShopping, FaClock, FaFileInvoiceDollar } from "react-icons/fa6";
 import { GiReceiveMoney } from "react-icons/gi";
 import { MdOutlineLocalOffer } from "react-icons/md";
 import { RiFileEditFill } from "react-icons/ri";
@@ -38,7 +33,7 @@ type Props = {
 
 const ItemActions: FC<Props> = ({ pixel }) => {
   const router = useRouter();
-  const now = useCurrentTime();
+  const { address } = useConnect();
 
   // buy confirm modal
   const [buyConfirmOpen, setBuyConfirmOpen] = useState<boolean>(false);
@@ -76,26 +71,12 @@ const ItemActions: FC<Props> = ({ pixel }) => {
     );
   }, [pixel.orders]);
 
-  // const isOwner = useMemo(
-  //   () => pixel.ownerId == address || pixel.auction?.ownerId == address,
-  //   [address, pixel.auction, pixel.ownerId],
-  // );
+  const isOwner = useMemo(
+    () => pixel.ownerId == address?.ordinals,
+    [address, pixel.ownerId],
+  );
 
   const auctionTitle = useMemo(() => {
-    if (pixel.auction) {
-      if (pixel.auction?.endTime && pixel.auction.endTime >= now) {
-        return `Auction ends ${timestampToDateTime(pixel.auction.endTime)}`;
-      } else if (pixel.auction?.endTime && pixel.auction.endTime < now) {
-        return `Auction ended`;
-      } else if (pixel.auction.startTime > now) {
-        return `Auction lives in ${timestampToDateTime(
-          pixel.auction.startTime,
-        )}`;
-      } else {
-        return `Auction is live now`;
-      }
-    }
-
     if (listing) {
       return `Listing ends in ${timestampToDateTime(
         listing.expirationTime,
@@ -103,30 +84,15 @@ const ItemActions: FC<Props> = ({ pixel }) => {
     }
 
     return "Not listed yet";
-  }, [listing, now, pixel.auction]);
+  }, [listing]);
 
   const price = useMemo(() => {
-    if (pixel.auction) {
-      if (pixel.auction.bidPrice) {
-        if (now > pixel.auction.endTime) {
-          return undefined;
-        }
-
-        return (
-          (BigInt(pixel.auction.bidPrice) *
-            BigInt(pixel.auction.minWinPercent)) /
-          100n
-        );
-      } else {
-        return BigInt(pixel.auction.minPrice);
-      }
-    }
     if (listing) {
       return BigInt(listing.price);
     }
 
     return undefined;
-  }, [listing, now, pixel.auction]);
+  }, [listing]);
 
   const handleBuy = useCallback(async () => {
     if (!listing) {
@@ -291,97 +257,54 @@ const ItemActions: FC<Props> = ({ pixel }) => {
             </div>
           </div>
         )}
-        {
-          // isOwner
-          1 &&
-            (pixel.auction ? (
-              <Link href={`/market/auction/${pixel.auction.id}`}>
-                {now >= pixel.auction.startTime &&
-                  !pixel.auction.lastBidderId && (
-                    <Button className="w-full">
-                      <FaWallet className="mr-2 h-5 w-5" />
-                      Cancel Auction
-                    </Button>
-                  )}
-                {now >= pixel.auction.endTime && pixel.auction.lastBidderId && (
-                  <Button className="w-full">
-                    <FaWallet className="mr-2 h-5 w-5" />
-                    Finish Auction
-                  </Button>
-                )}
-              </Link>
-            ) : (
-              <div className="flex flex-col gap-1 lg:flex-row">
-                {bestOffer && (
-                  <Button
-                    type="button"
-                    className="w-full"
-                    onClick={handleAcceptOffer}
-                  >
-                    <GiReceiveMoney className="mr-2 h-5 w-5" />
-                    Accept offer |{" "}
-                    {/* {formatBigIntWithUnits(BigInt(bestOffer.price))} WETH */}
-                  </Button>
-                )}
-                {!listing ? (
-                  <Link
-                    className="w-full"
-                    href={`/market/${pixel.tokenId}/list`}
-                  >
-                    <Button className="w-full">
-                      <FaFileInvoiceDollar className="mr-2 h-5 w-5" />
-                      List for sale
-                    </Button>
-                  </Link>
-                ) : (
-                  <Link className="w-full" href={`/market/list/${listing.id}`}>
-                    <Button className="w-full">
-                      <RiFileEditFill className="mr-2 h-5 w-5" />
-                      Edit list
-                    </Button>
-                  </Link>
-                )}
-              </div>
-            ))
-        }
-        {
-          // !isOwner
-          1 &&
-            (pixel.auction ? (
-              <Link href={`/market/auction/${pixel.auction.id}`}>
-                {pixel.auction?.lastBidderId == "1" &&
-                // address
-                now >= pixel?.auction?.endTime ? (
-                  <Button className="w-full">
-                    <FaWallet className="mr-2 h-5 w-5" />
-                    Finish Auction
-                  </Button>
-                ) : (
-                  <Button className="w-full">
-                    <FaWallet className="mr-2 h-5 w-5" />
-                    Place bid
-                  </Button>
-                )}
-              </Link>
-            ) : (
-              <div className="flex flex-col gap-1 lg:flex-row">
-                {listing && (
-                  <Button type="button" className="w-full" onClick={handleBuy}>
-                    <FaBagShopping className="mr-2 h-5 w-5" />
-                    Buy pixel
-                  </Button>
-                )}
-                <Button
-                  type="button"
-                  className="w-full"
-                  onClick={() => setOfferModalOpen(true)}
-                >
-                  <MdOutlineLocalOffer className="mr-2 h-5 w-5" />
-                  Make offer
+        {isOwner && (
+          <div className="flex flex-col gap-1 lg:flex-row">
+            {bestOffer && (
+              <Button
+                type="button"
+                className="w-full"
+                onClick={handleAcceptOffer}
+              >
+                <GiReceiveMoney className="mr-2 h-5 w-5" />
+                Accept offer |{" "}
+                {/* {formatBigIntWithUnits(BigInt(bestOffer.price))} WETH */}
+              </Button>
+            )}
+            {!listing ? (
+              <Link className="w-full" href={`/market/${pixel.tokenId}/list`}>
+                <Button className="w-full">
+                  <FaFileInvoiceDollar className="mr-2 h-5 w-5" />
+                  List for sale
                 </Button>
-              </div>
-            ))
-        }
+              </Link>
+            ) : (
+              <Link className="w-full" href={`/market/list/${listing.id}`}>
+                <Button className="w-full">
+                  <RiFileEditFill className="mr-2 h-5 w-5" />
+                  Edit list
+                </Button>
+              </Link>
+            )}
+          </div>
+        )}
+        {!isOwner && (
+          <div className="flex flex-col gap-1 lg:flex-row">
+            {listing && (
+              <Button type="button" className="w-full" onClick={handleBuy}>
+                <FaBagShopping className="mr-2 h-5 w-5" />
+                Buy pixel
+              </Button>
+            )}
+            <Button
+              type="button"
+              className="w-full"
+              onClick={() => setOfferModalOpen(true)}
+            >
+              <MdOutlineLocalOffer className="mr-2 h-5 w-5" />
+              Make offer
+            </Button>
+          </div>
+        )}
         <ConformModal
           title={"Buy NFT"}
           isOpen={buyConfirmOpen}

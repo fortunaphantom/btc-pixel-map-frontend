@@ -83,26 +83,17 @@ const UserActivity: FC<Props> = ({ address }) => {
             className="w-full"
             color="gray"
           >
+            <Dropdown.Item onClick={() => toggleFilterType("Reveal")}>
+              Reveal
+            </Dropdown.Item>
             <Dropdown.Item onClick={() => toggleFilterType("Transfer")}>
               Transfer
-            </Dropdown.Item>
-            <Dropdown.Item onClick={() => toggleFilterType("Update")}>
-              Update
             </Dropdown.Item>
             <Dropdown.Item onClick={() => toggleFilterType("Sale")}>
               Sale
             </Dropdown.Item>
             <Dropdown.Item onClick={() => toggleFilterType("Listing")}>
               Listing
-            </Dropdown.Item>
-            <Dropdown.Item onClick={() => toggleFilterType("Offer")}>
-              Offer
-            </Dropdown.Item>
-            <Dropdown.Item onClick={() => toggleFilterType("Bid")}>
-              Bid
-            </Dropdown.Item>
-            <Dropdown.Item onClick={() => toggleFilterType("Lend")}>
-              Lend
             </Dropdown.Item>
           </Dropdown>
         </div>

@@ -8,7 +8,6 @@ type Pixel = {
   bottom: number;
 
   // metadata
-  tokenUri: string;
   image: string;
   name: string;
   description: string;
@@ -24,7 +23,6 @@ type Pixel = {
   favorites: Favorite[];
   views: View[];
   orders: OrderData[];
-  auction?: Auction;
 };
 
 type User = {
@@ -44,11 +42,6 @@ type View = {
   tokenId: string;
   actorId: `0x${string}`;
 };
-
-enum Side {
-  Buy = 0,
-  Sell = 1,
-}
 
 type OrderCreateData = {
   trader: `0x${string}`;
@@ -82,32 +75,6 @@ type OrderData = {
   v: number;
 
   creator: User;
-  pixel: Pixel;
-};
-
-enum AuctionState {
-  Created = "Created",
-  Started = "Started",
-  Cancelled = "Cancelled",
-  Finished = "Finished",
-}
-
-type Auction = {
-  id: string;
-  tokenId: number;
-  duration: number;
-  endTime: number;
-  minPrice: string;
-  minWinPercent: number;
-  ownerId: `0x${string}`;
-  paymentToken: `0x${string}`;
-  startTime: number;
-  state: AuctionState;
-  lastBidderId?: string;
-  bidPrice?: string;
-
-  owner: User;
-  lastBidder: User;
   pixel: Pixel;
 };
 
@@ -165,25 +132,9 @@ type FilterOption = {
   };
 };
 
-type HistoryType =
-  | "Transfer"
-  | "Update"
-  | "Sale"
-  | "SaleListing"
-  | "AuctionListing"
-  | "LendListing"
-  | "Offer"
-  | "Bid"
-  | "Lend";
+type HistoryType = "Reveal" | "Transfer" | "Listing" | "Sale";
 
-type FilterType =
-  | "Transfer"
-  | "Update"
-  | "Sale"
-  | "Listing"
-  | "Offer"
-  | "Bid"
-  | "Lend";
+type FilterType = "Reveal" | "Transfer" | "Listing" | "Sale";
 
 type ItemHistory = {
   id: number | string;

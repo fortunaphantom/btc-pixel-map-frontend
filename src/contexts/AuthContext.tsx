@@ -1,15 +1,21 @@
 "use client";
 
 import { BACKEND_URL } from "@/config";
+import { getChallenge, signIn } from "@/helpers/api/auth";
 import { isBrowser } from "@/helpers/is-browser";
+import { useSignMessage } from "@/hooks";
 import axios, { AxiosInstance } from "axios";
 import {
   PropsWithChildren,
   createContext,
+  useCallback,
   useContext,
+  useEffect,
   useMemo,
   useState,
 } from "react";
+import toast from "react-hot-toast";
+import { useConnect } from "./WalletConnectProvider";
 
 type AuthContextType = {
   axios: AxiosInstance;
@@ -29,49 +35,47 @@ export const AuthContext = createContext<AuthContextType>({
 });
 
 const AuthContextProvider: React.FC<PropsWithChildren> = ({ children }) => {
-  // const { address, isConnected } = useAccount();
+  const { address } = useConnect();
+  const { signMsg } = useSignMessage();
 
   const storedAccessToken = isBrowser()
     ? localStorage.getItem("access-token")
     : "";
 
-  const [
-    authorized,
-    // setAuthorized
-  ] = useState<boolean>(!!storedAccessToken?.length);
-  const [
-    accessToken,
-    // setAccessToken
-  ] = useState<string>(storedAccessToken ?? "");
+  const [authorized, setAuthorized] = useState<boolean>(
+    !!storedAccessToken?.length,
+  );
+  const [accessToken, setAccessToken] = useState<string>(
+    storedAccessToken ?? "",
+  );
 
-  // const { signMessageAsync } = useSignMessage({
-  //   onError(error: Error) {
-  //     console.log(error);
-  //   },
-  // });
+  const refreshToken = useCallback(async () => {
+    if (!address?.ordinals) {
+      setAuthorized(false);
+      setAccessToken("");
+      return;
+    }
 
-  // const refreshToken = useCallback(async () => {
-  //   if (!address || !isConnected) {
-  //     setAuthorized(false);
-  //     setAccessToken("");
-  //     return;
-  //   }
+    try {
+      const challenge = await getChallenge(address.ordinals);
+      const signature = await signMsg(address.ordinals, challenge);
+      console.log(signature);
+      const data = await signIn(
+        address.ordinals,
+        challenge,
+        signature as string,
+      );
 
-  //   try {
-  //     const challenge = await getChallenge(address);
-  //     const signature = await signMessageAsync({ message: challenge });
-  //     const data = await signIn(address, challenge, signature);
+      const accessToken = `Bearer ${data?.accessToken}`;
+      setAuthorized(true);
+      setAccessToken(accessToken);
 
-  //     const accessToken = `Bearer ${data?.accessToken}`;
-  //     setAuthorized(true);
-  //     setAccessToken(accessToken);
-
-  //     return accessToken;
-  //   } catch (err: any) {
-  //     console.log(err);
-  //     toast.error(err?.shortMessage ?? err?.response?.reason);
-  //   }
-  // }, [address, isConnected, signMessageAsync]);
+      return accessToken;
+    } catch (err: any) {
+      console.log(err);
+      toast.error(err?.message ?? err?.response?.reason);
+    }
+  }, [address?.ordinals, signMsg]);
 
   const axiosInstance = useMemo(() => {
     const instance = axios.create({
@@ -95,8 +99,8 @@ const AuthContextProvider: React.FC<PropsWithChildren> = ({ children }) => {
         console.log(error);
         if (error?.response?.status == 401) {
           console.log("refresh access token and retry");
-          // const accessToken = await refreshToken();
-          // error.config.headers["authorization"] = accessToken;
+          const accessToken = await refreshToken();
+          error.config.headers["authorization"] = accessToken;
 
           return axios.request(error.config);
         } else {
@@ -106,25 +110,28 @@ const AuthContextProvider: React.FC<PropsWithChildren> = ({ children }) => {
     );
 
     return instance;
+  }, [accessToken, refreshToken]);
+
+  useEffect(() => {
+    if (!address?.ordinals) {
+      return;
+    }
+    const timer = setTimeout(async () => {
+      try {
+        await axiosInstance.post(`/auth/check/${address.ordinals}`);
+      } catch (err) {
+        console.log(err);
+      }
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [axiosInstance, address.ordinals]);
+
+  useEffect(() => {
+    if (accessToken?.length) {
+      localStorage.setItem("access-token", accessToken);
+    }
   }, [accessToken]);
-
-  // useEffect(() => {
-  //   const timer = setTimeout(async () => {
-  //     try {
-  //       await axiosInstance.post(`/auth/check/${address}`);
-  //     } catch (err) {
-  //       console.log(err);
-  //     }
-  //   }, 1000);
-
-  //   return () => clearTimeout(timer);
-  // }, [axiosInstance, address]);
-
-  // useEffect(() => {
-  //   if (accessToken?.length) {
-  //     localStorage.setItem("access-token", accessToken);
-  //   }
-  // }, [accessToken, address]);
 
   return (
     <AuthContext.Provider

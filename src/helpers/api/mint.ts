@@ -20,6 +20,13 @@ type CreatePayload = {
   receiver: string;
 };
 
+type RevealTransaction = {
+  id: string;
+  creator: string;
+  type: "Reveal";
+  checked: boolean;
+};
+
 export const getMintSign = async (payload: CreatePayload) => {
   const { data } = await axios.post(`/pixel/create`, payload);
   return data as MintParam;
@@ -31,4 +38,9 @@ export const generateUpdateParams = async (
 ) => {
   const { data } = await axios.post(`/pixel/update/${tokenId}`, payload);
   return data as MintParam;
+};
+
+export const getRevealState = async (account: string) => {
+  const { data } = await axios.get(`/pixel/reveal-state?account=${account}`);
+  return data as RevealTransaction;
 };
