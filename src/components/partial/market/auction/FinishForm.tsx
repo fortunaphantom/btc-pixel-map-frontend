@@ -17,7 +17,7 @@ type Props = {
   id: string;
 };
 
-export const FinishForm: FC<Props> = ({ id, tokenId }) => {
+export const FinishForm: FC<Props> = ({ tokenId }) => {
   const router = useRouter();
   // confirm modal
   const [confirmOpen, setConfirmOpen] = useState<boolean>(false);
@@ -45,10 +45,7 @@ export const FinishForm: FC<Props> = ({ id, tokenId }) => {
     }
 
     setActiveStep(1);
-  }, [
-    // finish,
-    id,
-  ]);
+  }, []);
 
   return (
     <div className="mt-2 flex flex-col">

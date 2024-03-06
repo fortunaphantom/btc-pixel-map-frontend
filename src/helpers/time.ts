@@ -34,8 +34,8 @@ export const formatTimeInterval = (interval: number): string => {
     .padStart(2, "0")}`;
 };
 
-export const timestampToDateTime = (timestamp: number): string => {
-  const date = new Date(timestamp * 1000); // Multiply by 1000 as JavaScript Date works with milliseconds
+export const timeFormat = (time: string): string => {
+  const date = new Date(time); // Multiply by 1000 as JavaScript Date works with milliseconds
   const months = [
     "January",
     "February",

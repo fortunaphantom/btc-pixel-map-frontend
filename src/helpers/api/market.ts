@@ -1,13 +1,17 @@
 import axios from "../axios";
 
-export const orderPixel = async (
-  payload: OrderCreateData,
-  prevOrder?: string,
+export const getListPsbt = async (
+  id: string,
+  publicKey: string,
+  price: number,
 ) => {
-  const { data } = await axios.post(
-    "/pixel/order" + (prevOrder ? `?prev=${prevOrder}` : ""),
-    payload,
-  );
+  const { data } = await axios.get(`/pixel/list/psbt/${id}`, {
+    params: {
+      publicKey,
+      price,
+    },
+  });
+
   return data;
 };
 
@@ -16,7 +20,7 @@ export const getAuctionDetail = async (id: string) => {
   return data;
 };
 
-export const getOrderDetail = async (id: string) => {
-  const { data } = await axios.get(`/pixel/order/${id}`);
+export const getListingDetail = async (id: string) => {
+  const { data } = await axios.get(`/pixel/listing/${id}`);
   return data;
 };

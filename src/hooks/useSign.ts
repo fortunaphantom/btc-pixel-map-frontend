@@ -23,12 +23,17 @@ export function useSign() {
 
           const unsignedPsbt = Psbt.fromBase64(unsignedPsbtBase64);
 
+          console.log(unsignedPsbt);
+
           const signedPsbt = await signPsbt({
             address,
             wallet,
             network,
             psbt: unsignedPsbt,
-            options,
+            options: {
+              ...options,
+              sigHash: unsignedPsbt?.data?.inputs?.[0]?.sighashType,
+            },
           });
 
           res(signedPsbt);

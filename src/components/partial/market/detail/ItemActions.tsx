@@ -1,15 +1,12 @@
 import ConformModal from "@/components/modal/ConfirmModal";
-import OfferModal from "@/components/modal/OfferModal";
 import { useConnect } from "@/contexts/WalletConnectProvider";
-import { delay, timestampToDateTime } from "@/helpers/time";
+import { delay, timeFormat } from "@/helpers/time";
 import { Button, Card } from "flowbite-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FC, useCallback, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { FaBagShopping, FaClock, FaFileInvoiceDollar } from "react-icons/fa6";
-import { GiReceiveMoney } from "react-icons/gi";
-import { MdOutlineLocalOffer } from "react-icons/md";
 import { RiFileEditFill } from "react-icons/ri";
 
 const buyConfirmSteps: ConfirmStep[] = [
@@ -19,13 +16,13 @@ const buyConfirmSteps: ConfirmStep[] = [
       "You'll be asked to review and transact buy transaction from your wallet.",
   },
 ];
-const acceptOfferConfirmSteps: ConfirmStep[] = [
-  {
-    title: "Accept offer",
-    description:
-      "You'll be asked to review and transact accept transaction from your wallet.",
-  },
-];
+// const acceptOfferConfirmSteps: ConfirmStep[] = [
+//   {
+//     title: "Accept offer",
+//     description:
+//       "You'll be asked to review and transact accept transaction from your wallet.",
+//   },
+// ];
 
 type Props = {
   pixel: Pixel;
@@ -37,39 +34,34 @@ const ItemActions: FC<Props> = ({ pixel }) => {
 
   // buy confirm modal
   const [buyConfirmOpen, setBuyConfirmOpen] = useState<boolean>(false);
-  const [acceptOfferConfirmOpen, setAcceptOfferConfirmOpen] =
-    useState<boolean>(false);
+  // const [acceptOfferConfirmOpen, setAcceptOfferConfirmOpen] =
+  //   useState<boolean>(false);
   const [activeStep, setActiveStep] = useState<number>(0);
   const [errorStep, setErrorStep] = useState<number>();
   const [errorMessage, setErrorMessage] = useState<string>();
 
   // make offer modal
-  const [offerModalOpen, setOfferModalOpen] = useState<boolean>(false);
+  // const [offerModalOpen, setOfferModalOpen] = useState<boolean>(false);
 
   // const size = useMemo(
   //   () => (pixel.bottom - pixel.top + 1) * (pixel.right - pixel.left + 1),
   //   [pixel],
   // );
 
-  const listing: OrderData | undefined = useMemo(
-    () => (pixel.orders ?? []).filter((order) => order.side == "Sell")?.[0],
-    [pixel],
-  );
+  // const bestOffer = useMemo(() => {
+  //   const offers = (pixel.orders ?? []).filter((order) => order.side == "Buy");
+  //   if (!offers.length) {
+  //     return undefined;
+  //   }
 
-  const bestOffer = useMemo(() => {
-    const offers = (pixel.orders ?? []).filter((order) => order.side == "Buy");
-    if (!offers.length) {
-      return undefined;
-    }
+  //   if (offers.length == 1) {
+  //     return offers[0];
+  //   }
 
-    if (offers.length == 1) {
-      return offers[0];
-    }
-
-    return offers.reduce((prev: OrderData, current: OrderData) =>
-      BigInt(prev.price) > BigInt(current.price) ? prev : current,
-    );
-  }, [pixel.orders]);
+  //   return offers.reduce((prev: OrderData, current: OrderData) =>
+  //     BigInt(prev.price) > BigInt(current.price) ? prev : current,
+  //   );
+  // }, [pixel.orders]);
 
   const isOwner = useMemo(
     () => pixel.ownerId == address?.ordinals,
@@ -77,25 +69,15 @@ const ItemActions: FC<Props> = ({ pixel }) => {
   );
 
   const auctionTitle = useMemo(() => {
-    if (listing) {
-      return `Listing ends in ${timestampToDateTime(
-        listing.expirationTime,
-      )} ETH`;
+    if (pixel?.listing) {
+      return `Listing ends in ${timeFormat(pixel.listing.expires)} ETH`;
     }
 
     return "Not listed yet";
-  }, [listing]);
-
-  const price = useMemo(() => {
-    if (listing) {
-      return BigInt(listing.price);
-    }
-
-    return undefined;
-  }, [listing]);
+  }, [pixel?.listing]);
 
   const handleBuy = useCallback(async () => {
-    if (!listing) {
+    if (!pixel?.listing) {
       toast.error("Invalid action");
       return;
     }
@@ -154,70 +136,70 @@ const ItemActions: FC<Props> = ({ pixel }) => {
     setActiveStep(1);
   }, [
     // address, execute,
-    listing,
+    pixel?.listing,
   ]);
 
-  const handleAcceptOffer = useCallback(async () => {
-    if (!bestOffer) {
-      toast.error("Invalid action");
-      return;
-    }
+  // const handleAcceptOffer = useCallback(async () => {
+  //   if (!bestOffer) {
+  //     toast.error("Invalid action");
+  //     return;
+  //   }
 
-    setAcceptOfferConfirmOpen(true);
-    setErrorStep(undefined);
-    setErrorMessage(undefined);
+  //   setAcceptOfferConfirmOpen(true);
+  //   setErrorStep(undefined);
+  //   setErrorMessage(undefined);
 
-    try {
-      setActiveStep(0);
-      // const buyInput = {
-      //   order: {
-      //     trader: bestOffer.trader,
-      //     side: 0,
-      //     collection: PIXEL_CONTRACT_ADDRESS,
-      //     tokenId: bestOffer.tokenId,
-      //     paymentToken: bestOffer.paymentToken,
-      //     price: bestOffer.price,
-      //     listingTime: bestOffer.listingTime,
-      //     expirationTime: bestOffer.expirationTime,
-      //     salt: bestOffer.salt,
-      //   },
-      //   r: bestOffer.r,
-      //   s: bestOffer.s,
-      //   v: bestOffer.v,
-      // };
-      // const sellInput = {
-      //   order: {
-      //     trader: address,
-      //     side: 1,
-      //     collection: PIXEL_CONTRACT_ADDRESS,
-      //     tokenId: bestOffer.tokenId,
-      //     paymentToken: bestOffer.paymentToken,
-      //     price: bestOffer.price,
-      //     listingTime: 0,
-      //     expirationTime: bestOffer.expirationTime,
-      //     salt: 0,
-      //   },
-      //   r: zeroHash,
-      //   s: zeroHash,
-      //   v: 0,
-      // };
-      // const { hash } = await execute({
-      //   args: [sellInput, buyInput],
-      // });
-      // await waitForTransaction({ hash });
-      await delay(5000);
-    } catch (err: any) {
-      console.log(err);
-      setErrorStep(0);
-      setErrorMessage(err?.shortMessage ?? "Something went wrong");
-      return;
-    }
+  //   try {
+  //     setActiveStep(0);
+  //     // const buyInput = {
+  //     //   order: {
+  //     //     trader: bestOffer.trader,
+  //     //     side: 0,
+  //     //     collection: PIXEL_CONTRACT_ADDRESS,
+  //     //     tokenId: bestOffer.tokenId,
+  //     //     paymentToken: bestOffer.paymentToken,
+  //     //     price: bestOffer.price,
+  //     //     listingTime: bestOffer.listingTime,
+  //     //     expirationTime: bestOffer.expirationTime,
+  //     //     salt: bestOffer.salt,
+  //     //   },
+  //     //   r: bestOffer.r,
+  //     //   s: bestOffer.s,
+  //     //   v: bestOffer.v,
+  //     // };
+  //     // const sellInput = {
+  //     //   order: {
+  //     //     trader: address,
+  //     //     side: 1,
+  //     //     collection: PIXEL_CONTRACT_ADDRESS,
+  //     //     tokenId: bestOffer.tokenId,
+  //     //     paymentToken: bestOffer.paymentToken,
+  //     //     price: bestOffer.price,
+  //     //     listingTime: 0,
+  //     //     expirationTime: bestOffer.expirationTime,
+  //     //     salt: 0,
+  //     //   },
+  //     //   r: zeroHash,
+  //     //   s: zeroHash,
+  //     //   v: 0,
+  //     // };
+  //     // const { hash } = await execute({
+  //     //   args: [sellInput, buyInput],
+  //     // });
+  //     // await waitForTransaction({ hash });
+  //     await delay(5000);
+  //   } catch (err: any) {
+  //     console.log(err);
+  //     setErrorStep(0);
+  //     setErrorMessage(err?.shortMessage ?? "Something went wrong");
+  //     return;
+  //   }
 
-    setActiveStep(1);
-  }, [
-    // address, execute,
-    bestOffer,
-  ]);
+  //   setActiveStep(1);
+  // }, [
+  //   // address, execute,
+  //   bestOffer,
+  // ]);
 
   return (
     <div className="mx-5 my-4 flex text-slate-900 dark:text-white">
@@ -230,36 +212,36 @@ const ItemActions: FC<Props> = ({ pixel }) => {
           </div>
         )}
       >
-        {price != undefined && (
+        {pixel?.listing != undefined && (
           <div className="flex w-full flex-col justify-between">
             <span className="text-sm text-slate-800 dark:text-slate-200">
               Current price
             </span>
             <div className="mt-1 inline-flex items-end gap-2 py-1 text-3xl leading-none">
-              {/* {formatBigIntWithUnits(price)} ETH
+              {pixel.listing.price / 100_000_000} BTC
               <span className="text-xs">
-                {formatBigIntWithUnits(price / BigInt(size))} ETH/Pixel
-              </span> */}
+                {pixel.listing.pricePerPixel} Sats/Pixel
+              </span>
             </div>
           </div>
         )}
-        {!price && bestOffer && (
+        {/* {!price && bestOffer && (
           <div className="flex w-full flex-col justify-between">
             <span className="text-sm text-slate-800 dark:text-slate-200">
               Best offer
             </span>
             <div className="mt-1 inline-flex items-end gap-2 py-1 text-3xl leading-none">
-              {/* {formatBigIntWithUnits(BigInt(bestOffer.price))} ETH
+              {formatBigIntWithUnits(BigInt(bestOffer.price))} ETH
               <span className="text-xs">
                 {formatBigIntWithUnits(BigInt(bestOffer.price) / BigInt(size))}{" "}
                 ETH/Pixel
-              </span> */}
+              </span>
             </div>
           </div>
-        )}
+        )} */}
         {isOwner && (
           <div className="flex flex-col gap-1 lg:flex-row">
-            {bestOffer && (
+            {/* {bestOffer && (
               <Button
                 type="button"
                 className="w-full"
@@ -267,18 +249,21 @@ const ItemActions: FC<Props> = ({ pixel }) => {
               >
                 <GiReceiveMoney className="mr-2 h-5 w-5" />
                 Accept offer |{" "}
-                {/* {formatBigIntWithUnits(BigInt(bestOffer.price))} WETH */}
+                 {formatBigIntWithUnits(BigInt(bestOffer.price))} WETH *
               </Button>
-            )}
-            {!listing ? (
-              <Link className="w-full" href={`/market/${pixel.tokenId}/list`}>
+            )} */}
+            {!pixel?.listing ? (
+              <Link className="w-full" href={`/market/${pixel.id}/list`}>
                 <Button className="w-full">
                   <FaFileInvoiceDollar className="mr-2 h-5 w-5" />
                   List for sale
                 </Button>
               </Link>
             ) : (
-              <Link className="w-full" href={`/market/list/${listing.id}`}>
+              <Link
+                className="w-full"
+                href={`/market/list/${pixel.listing.id}`}
+              >
                 <Button className="w-full">
                   <RiFileEditFill className="mr-2 h-5 w-5" />
                   Edit list
@@ -289,20 +274,20 @@ const ItemActions: FC<Props> = ({ pixel }) => {
         )}
         {!isOwner && (
           <div className="flex flex-col gap-1 lg:flex-row">
-            {listing && (
+            {pixel?.listing && (
               <Button type="button" className="w-full" onClick={handleBuy}>
                 <FaBagShopping className="mr-2 h-5 w-5" />
                 Buy pixel
               </Button>
             )}
-            <Button
+            {/* <Button
               type="button"
               className="w-full"
               onClick={() => setOfferModalOpen(true)}
             >
               <MdOutlineLocalOffer className="mr-2 h-5 w-5" />
               Make offer
-            </Button>
+            </Button> */}
           </div>
         )}
         <ConformModal
@@ -320,7 +305,7 @@ const ItemActions: FC<Props> = ({ pixel }) => {
             router.refresh();
           }}
         />
-        <ConformModal
+        {/* <ConformModal
           title={"Accept offer"}
           isOpen={acceptOfferConfirmOpen}
           setOpen={setAcceptOfferConfirmOpen}
@@ -334,17 +319,17 @@ const ItemActions: FC<Props> = ({ pixel }) => {
             setAcceptOfferConfirmOpen(false);
             router.refresh();
           }}
-        />
+        /> */}
       </Card>
-      {pixel && (
+      {/* {pixel && (
         <OfferModal
           isOpen={offerModalOpen}
           setOpen={setOfferModalOpen}
           pixel={pixel}
-          listing={listing}
+          listing={pixel?.listing}
           bestOffer={bestOffer?.price ? BigInt(bestOffer.price) : undefined}
         />
-      )}
+      )} */}
     </div>
   );
 };

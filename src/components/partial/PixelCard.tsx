@@ -21,7 +21,7 @@ const PixelCard: FC<CardProps> = ({ pixel }) => {
 
   return (
     <Card
-      href={`/market/${pixel.tokenId}`}
+      href={`/market/${pixel.id}`}
       className="w-full"
       renderImage={() => (
         <div className="relative flex h-52 w-full items-center justify-center overflow-hidden rounded-t-lg bg-slate-100 dark:bg-slate-900">

@@ -58,7 +58,7 @@ const UserPixels: FC<Props> = ({ address, setTotalPixels }) => {
   return (
     <div className="grid w-full grid-cols-2 gap-2 md:grid-cols-4 xl:grid-cols-6">
       {pixels.map((pixel) => (
-        <PixelCard key={pixel.tokenId} pixel={pixel} />
+        <PixelCard key={pixel.id} pixel={pixel} />
       ))}
       {isLoading && (
         <div className="col-span-full h-10 w-full">

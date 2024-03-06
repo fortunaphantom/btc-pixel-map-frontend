@@ -1,4 +1,5 @@
 import { CollapsibleCard } from "@/components/common/CollapsibleCard";
+import { shortenString } from "@/helpers";
 import Link from "next/link";
 import { FC } from "react";
 import { BiDetail } from "react-icons/bi";
@@ -17,8 +18,12 @@ const ItemDetails: FC<Props> = ({ pixel }) => {
       >
         <div className="flex w-full flex-col gap-2 p-5">
           <div className="flex w-full justify-between">
-            Token Id
-            <span className="text-sm"># {pixel.tokenId}</span>
+            Id
+            <span className="text-sm">{shortenString(pixel.id)}</span>
+          </div>
+          <div className="flex w-full justify-between">
+            Sat
+            <span className="text-sm"># {pixel.sat}</span>
           </div>
           <div className="flex w-full justify-between">
             Name
@@ -48,9 +53,7 @@ const ItemDetails: FC<Props> = ({ pixel }) => {
           </div>
           <div className="flex w-full justify-between">
             Size
-            <span className="text-sm">
-              {(pixel.right - pixel.left + 1) * (pixel.bottom - pixel.top + 1)}
-            </span>
+            <span className="text-sm">{pixel.size}</span>
           </div>
         </div>
       </CollapsibleCard>

@@ -1,11 +1,7 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 "use client";
 
-import {
-  AuctionForm,
-  ListModeSelect,
-  OrderForm,
-} from "@/components/partial/market/list";
+import { ListForm } from "@/components/partial/market/list";
 import { parseIpfsUrl } from "@/helpers";
 import { getPixelDetail } from "@/helpers/api";
 // import { dynamicBlurDataUrl } from "@/helpers/image";
@@ -18,19 +14,18 @@ import { useEffect, useState } from "react";
 import { FaChevronLeft } from "react-icons/fa6";
 
 const TokenListContent: NextPage = () => {
-  const { tokenId } = useParams();
+  const { id } = useParams();
   const [pixel, setPixel] = useState<Pixel>();
   // const [blurDataURL, setBlurDataURL] = useState<string>();
-  const [mode, setMode] = useState<"Order" | "Auction">("Order");
 
   useEffect(() => {
     setPixel(undefined);
-    if (!tokenId) {
+    if (!id) {
       return;
     }
 
-    getPixelDetail(tokenId as string).then(setPixel);
-  }, [tokenId]);
+    getPixelDetail(id as string).then(setPixel);
+  }, [id]);
 
   // useEffect(() => {
   //   if (pixel?.image) {
@@ -43,23 +38,14 @@ const TokenListContent: NextPage = () => {
       <div className="flex h-fit w-full justify-center gap-20">
         <div className="w-3/5 max-w-lg">
           <div className="my-10 flex items-center">
-            <Link href={`/market/${pixel?.tokenId}`}>
+            <Link href={`/market/${pixel?.id}`}>
               <div className="mr-5 flex items-center">
                 <FaChevronLeft className="h-5 w-5" />
               </div>
             </Link>
             <h1 className="text-3xl font-semibold">List for sale</h1>
           </div>
-          <ListModeSelect value={mode} setValue={setMode} />
-          {pixel ? (
-            mode == "Order" ? (
-              <OrderForm pixel={pixel} />
-            ) : (
-              <AuctionForm pixel={pixel} />
-            )
-          ) : (
-            <></>
-          )}
+          {pixel && <ListForm pixel={pixel} />}
         </div>
         <div className="flex w-max flex-col">
           <div className="sticky top-28">

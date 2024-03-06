@@ -4,7 +4,7 @@ import { formatRemainingInterval } from "@/helpers/time";
 import { Table } from "flowbite-react";
 import Image from "next/image";
 import Link from "next/link";
-import { FC, useMemo } from "react";
+import { FC } from "react";
 
 type Props = {
   pixels: Pixel[];
@@ -23,7 +23,7 @@ const ListView: FC<Props> = ({ pixels }) => {
       </Table.Head>
       <Table.Body className="divide-y">
         {pixels.map((pixel) => (
-          <ListRow key={pixel.tokenId} pixel={pixel} />
+          <ListRow key={pixel.id} pixel={pixel} />
         ))}
       </Table.Body>
     </Table>
@@ -39,25 +39,25 @@ type RowProps = {
 const ListRow: FC<RowProps> = ({ pixel }) => {
   const now = useCurrentTime();
 
-  const bestOffer = useMemo(() => {
-    const offers = (pixel.orders ?? []).filter((order) => order.side == "Buy");
-    if (!offers.length) {
-      return undefined;
-    }
+  // const bestOffer = useMemo(() => {
+  //   const offers = (pixel.orders ?? []).filter((order) => order.side == "Buy");
+  //   if (!offers.length) {
+  //     return undefined;
+  //   }
 
-    if (offers.length == 1) {
-      return offers[0];
-    }
+  //   if (offers.length == 1) {
+  //     return offers[0];
+  //   }
 
-    return offers.reduce((prev: OrderData, current: OrderData) =>
-      BigInt(prev.price) > BigInt(current.price) ? prev : current,
-    );
-  }, [pixel.orders]);
+  //   return offers.reduce((prev: OrderData, current: OrderData) =>
+  //     BigInt(prev.price) > BigInt(current.price) ? prev : current,
+  //   );
+  // }, [pixel.orders]);
 
   return (
     <Table.Row className="bg-white dark:border-slate-700 dark:bg-slate-800">
       <Table.Cell className="whitespace-nowrap font-medium text-slate-900 dark:text-white">
-        <Link href={`/market/${pixel.tokenId}`}>
+        <Link href={`/market/${pixel.id}`}>
           <div className="flex max-w-[12vw] items-center">
             <div className="relative h-10 w-10 overflow-hidden rounded-sm">
               <div className="relative flex h-full min-h-[inherit] w-full flex-col items-center justify-center rounded-[inherit]">
@@ -88,9 +88,9 @@ const ListRow: FC<RowProps> = ({ pixel }) => {
           : "--"}
       </Table.Cell>
       <Table.Cell>
-        {bestOffer?.formatted && (bestOffer?.expirationTime ?? 0) >= now
+        {/* {bestOffer?.formatted && (bestOffer?.expirationTime ?? 0) >= now
           ? `${formatNumberWithUnit(bestOffer.formatted)} ETH`
-          : "--"}
+          : "--"} */}
       </Table.Cell>
       <Table.Cell>
         {pixel?.lastPrice

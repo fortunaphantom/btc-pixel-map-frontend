@@ -9,45 +9,37 @@ import {
   ItemHeader,
   ItemOffers,
   ItemSummery,
-} from "@/components/partial/market/token-detail";
+} from "@/components/partial/market/detail";
+import { useConnect } from "@/contexts/WalletConnectProvider";
 import { getPixelDetail, reportView } from "@/helpers/api";
 import { NextPage } from "next";
 import { useParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
 const TokenDetailContent: NextPage = () => {
-  const { tokenId } = useParams();
+  const { id } = useParams();
+  const { address } = useConnect();
   const [pixel, setPixel] = useState<Pixel>();
 
   const refreshPixel = useCallback(async () => {
-    getPixelDetail(tokenId as string).then(setPixel);
-  }, [tokenId]);
+    getPixelDetail(id as string).then(setPixel);
+  }, [id]);
 
   useEffect(() => {
     setPixel(undefined);
-    if (!tokenId) {
+    if (!id) {
       return;
     }
 
-    getPixelDetail(tokenId as string).then(setPixel);
-  }, [tokenId]);
+    getPixelDetail(id as string).then(setPixel);
+  }, [id]);
 
   useEffect(() => {
-    if (
-      !pixel
-      // || !address
-    ) {
+    if (!pixel || !address.ordinals) {
       return;
     }
-    reportView(
-      pixel.tokenId,
-      "0x01",
-      // address
-    );
-  }, [
-    // address,
-    pixel,
-  ]);
+    reportView(pixel.id, address.ordinals);
+  }, [address.ordinals, pixel]);
 
   return (
     <div className="mx-auto flex h-full min-h-fit w-full max-w-screen-2xl flex-row">

@@ -59,8 +59,8 @@ const AuthContextProvider: React.FC<PropsWithChildren> = ({ children }) => {
     try {
       const challenge = await getChallenge(address.ordinals);
       const signature = await signMsg(address.ordinals, challenge);
-      console.log(signature);
       const data = await signIn(
+        address.ordinals,
         address.ordinals,
         challenge,
         signature as string,

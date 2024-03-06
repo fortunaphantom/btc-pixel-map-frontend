@@ -25,7 +25,7 @@ const GridView: FC<Props> = ({ pixels, isSidebarOpen }) => {
       )}
     >
       {pixels.map((pixel) => (
-        <PixelCard key={pixel.tokenId} pixel={pixel} />
+        <PixelCard key={pixel.id} pixel={pixel} />
       ))}
     </div>
   );

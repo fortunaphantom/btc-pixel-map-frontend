@@ -34,13 +34,13 @@ const ItemSummery: FC<Props> = ({ pixel, refreshPixel }) => {
 
   const handleFavorite = useCallback(async () => {
     try {
-      await axios.post(`/pixel/favorite/${pixel.tokenId}`);
+      await axios.post(`/pixel/favorite/${pixel.id}`);
       await refreshPixel();
     } catch (err: any) {
       console.log(err);
       toast.error(err?.response?.reason);
     }
-  }, [axios, pixel.tokenId, refreshPixel]);
+  }, [axios, pixel.id, refreshPixel]);
 
   // useEffect(() => {
   //   if (pixel?.image) {
@@ -64,7 +64,7 @@ const ItemSummery: FC<Props> = ({ pixel, refreshPixel }) => {
     >
       <div className="flex items-center justify-between">
         <h5 className="text-lg font-bold tracking-tight text-slate-900 dark:text-white">
-          {pixel.name ?? `Pixel #${pixel.tokenId}`}
+          {pixel.name ?? `Pixel #${pixel.sat}`}
         </h5>
         <button type="button" onClick={handleFavorite}>
           {favorite ? (

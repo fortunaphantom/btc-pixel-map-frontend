@@ -6,12 +6,14 @@ export const getChallenge = async (address: string) => {
 };
 
 export const signIn = async (
-  address: string,
+  ordinals: string,
+  payments: string,
   challenge: string,
   signature: string,
 ) => {
   const { data } = await axios.post("/auth/sign", {
-    address,
+    ordinals,
+    payments,
     challenge,
     signature,
   });

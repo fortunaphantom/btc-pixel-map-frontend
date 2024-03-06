@@ -8,10 +8,12 @@ import {
   SummeryView,
 } from "@/components/partial/market/list";
 import InputWrapper from "@/components/partial/market/list/InputWrapper";
+import { useAuthContext } from "@/contexts/AuthContext";
+import { useConnect } from "@/contexts/WalletConnectProvider";
 import { parseIpfsUrl } from "@/helpers";
-import { getOrderDetail } from "@/helpers/api/market";
-// import { dynamicBlurDataUrl } from "@/helpers/image";
+import { getListPsbt, getListingDetail } from "@/helpers/api/market";
 import { delay } from "@/helpers/time";
+import { useSign } from "@/hooks";
 import { Button, Spinner } from "flowbite-react";
 import { NextPage } from "next";
 import Image from "next/image";
@@ -23,9 +25,13 @@ import { FaChevronLeft } from "react-icons/fa6";
 
 const editConfirmSteps: ConfirmStep[] = [
   {
-    title: "Sign for edit",
+    title: "Generate PSBT",
+    description: "You need to wait Listing PSBT to be generated",
+  },
+  {
+    title: "Sign for list",
     description:
-      "You'll be asked to review and sign for edit from your wallet.",
+      "You'll be asked to review and sign for list from your wallet.",
   },
   {
     title: "Listing item fro Sale",
@@ -35,27 +41,21 @@ const editConfirmSteps: ConfirmStep[] = [
 
 const cancelConfirmSteps: ConfirmStep[] = [
   {
-    title: "Transact for cancel",
-    description:
-      "You'll be asked to review and sign for cancel transaction from your wallet",
+    title: "Cancel listing",
+    description: "You need to wait until cancel listing",
   },
 ];
 
 const TokenListContent: NextPage = () => {
   const { id } = useParams();
-  const [order, setOrder] = useState<OrderData>();
+  const { address, publicKey, openModal } = useConnect();
+  const { axios } = useAuthContext();
+  const { sign } = useSign();
+
+  const [listing, setListing] = useState<Listing>();
   // const [blurDataURL, setBlurDataURL] = useState<string>();
   const [price, setPrice] = useState<number>();
-  const [
-    ,
-    // startTime
-    setStartTime,
-  ] = useState<number>();
-  const [
-    ,
-    // endTime
-    setEndTime,
-  ] = useState<number>();
+  const [duration, setDuration] = useState<number>();
 
   // confirm modal
   const [editConfirmOpen, setEditConfirmOpen] = useState<boolean>(false);
@@ -67,54 +67,83 @@ const TokenListContent: NextPage = () => {
   const router = useRouter();
 
   const handleEdit = useCallback(async () => {
+    if (!listing) {
+      return;
+    }
+    if (!address?.ordinals || !publicKey.ordinals) {
+      openModal();
+      return;
+    }
+    if (!price) {
+      toast.error("Please input sell price");
+      return;
+    }
+
     setEditConfirmOpen(true);
     setErrorStep(undefined);
     setErrorMessage(undefined);
 
+    const satsPrice = Math.floor(price * 100_000_000);
+
+    let psbt: string;
     try {
       setActiveStep(0);
-      // signature = await signTypedDataAsync();
+      psbt = await getListPsbt(listing.pixel.id, publicKey.ordinals, satsPrice);
     } catch (err: any) {
       console.log(err);
       setErrorStep(0);
-      setErrorMessage(err?.shortMessage ?? "Something went wrong");
+      setErrorMessage(err?.response?.data?.reason ?? "Something went wrong");
       // refetch();
+      return;
+    }
+
+    let signedPsbtStr: string;
+    try {
+      setActiveStep(1);
+      const signedPsbt = await sign(address.ordinals, psbt, {
+        finalize: false,
+        extractTx: false,
+      });
+      if (!signedPsbt.base64) {
+        throw new Error("Signing failed!");
+      }
+      signedPsbtStr = signedPsbt.base64;
+    } catch (err: any) {
+      console.log(err);
+      setErrorStep(1);
+      setErrorMessage(err ?? "Something went wrong");
       return;
     }
 
     try {
-      setActiveStep(1);
-      // const payload: OrderCreateData = {
-      //   trader: orderSignMessage.trader!,
-      //   side: 1,
-      //   collection: orderSignMessage.collection!,
-      //   tokenId: orderSignMessage.tokenId!,
-      //   paymentToken: orderSignMessage.paymentToken!,
-      //   price: orderSignMessage.price!.toString(),
-      //   listingTime: orderSignMessage.listingTime!,
-      //   expirationTime: orderSignMessage.expirationTime!,
-      //   salt: orderSignMessage.salt!.toString(),
-      //   nonce: orderSignMessage.nonce!.toString(),
-      //   signature: signature!,
-      // };
-
-      // await orderPixel(payload, id as string);
+      setActiveStep(2);
+      await axios.post(
+        `/pixel/list/${listing.pixel.id}?psbt=${signedPsbtStr}&price=${satsPrice}&duration=${duration}`,
+      );
     } catch (err: any) {
       console.log(err);
-      setErrorStep(1);
+      setErrorStep(2);
       setErrorMessage(
         err?.response?.data?.reason ?? "Something went wrong on server side",
       );
-      // refetch();
       return;
     }
 
-    setActiveStep(2);
-  }, [id]);
+    setActiveStep(3);
+  }, [
+    address.ordinals,
+    axios,
+    duration,
+    listing,
+    openModal,
+    price,
+    publicKey.ordinals,
+    sign,
+  ]);
 
   const handleCancel = useCallback(async () => {
-    if (!order) {
-      toast.error("Invalid order");
+    if (!listing) {
+      toast.error("Invalid listing");
       return;
     }
 
@@ -124,56 +153,34 @@ const TokenListContent: NextPage = () => {
 
     try {
       setActiveStep(0);
-      // const { hash } = await cancelOrder({
-      //   args: [
-      //     {
-      //       trader: order.trader,
-      //       side: 1,
-      //       collection: PIXEL_CONTRACT_ADDRESS,
-      //       tokenId: order.tokenId,
-      //       paymentToken: order.paymentToken,
-      //       price: order.price,
-      //       listingTime: order.listingTime,
-      //       expirationTime: order.expirationTime,
-      //       salt: order.salt,
-      //     },
-      //   ],
-      // });
-
-      // await waitForTransaction({ hash });
+      await axios.delete(`/pixel/listing/${listing.id}`);
       await delay(5000);
     } catch (err: any) {
       console.log(err);
       setErrorStep(0);
       setErrorMessage(
         err?.response?.data?.reason ?? "Something went wrong on server side",
-        // refetch();
       );
       return;
     }
 
     setActiveStep(1);
-  }, [
-    order,
-    // , cancelOrder, refetch
-  ]);
+  }, [axios, listing]);
 
   useEffect(() => {
-    setOrder(undefined);
+    setListing(undefined);
     if (!id) {
       return;
     }
 
-    getOrderDetail(id as string).then(setOrder);
+    getListingDetail(id as string).then(setListing);
   }, [id]);
 
-  // useEffect(() => {
-  //   if (order) {
-  //     setPrice(+formatEther(BigInt(order.price)));
-  //     setStartTime(+order.listingTime);
-  //     setEndTime(order.expirationTime);
-  //   }
-  // }, [order]);
+  useEffect(() => {
+    if (listing) {
+      setPrice(listing.price / 100_000_000);
+    }
+  }, [listing]);
 
   // useEffect(() => {
   //   if (order?.pixel?.image) {
@@ -186,14 +193,14 @@ const TokenListContent: NextPage = () => {
       <div className="flex h-fit w-full justify-center gap-20">
         <div className="w-3/5 max-w-lg">
           <div className="my-10 flex items-center">
-            <Link href={`/market/${order?.tokenId}`}>
+            <Link href={`/market/${listing?.pixel?.id}`}>
               <div className="mr-5 flex items-center">
                 <FaChevronLeft className="h-5 w-5" />
               </div>
             </Link>
             <h1 className="text-3xl font-semibold">Edit listing</h1>
           </div>
-          {order && (
+          {listing && (
             <form
               className="mb-10"
               onSubmit={(e) => {
@@ -202,14 +209,15 @@ const TokenListContent: NextPage = () => {
                 handleEdit();
               }}
             >
-              <PriceInput value={price} setValue={setPrice} />
+              <PriceInput
+                size={listing.pixel.size}
+                value={price}
+                setValue={setPrice}
+              />
               <InputWrapper title="Duration">
-                <DurationInput
-                  setStartTime={setStartTime}
-                  setEndTime={setEndTime}
-                />
+                <DurationInput setDuration={setDuration} />
               </InputWrapper>
-              <SummeryView mode="Order" price={price} />
+              <SummeryView price={price} />
               <div className="flex w-full flex-col gap-2 lg:flex-row">
                 <Button
                   type="submit"
@@ -239,7 +247,9 @@ const TokenListContent: NextPage = () => {
                 errorMessage={errorMessage}
                 successMessage="Edit succeed"
                 handleRetry={handleEdit}
-                handleContinue={() => router.push(`/market/${order.tokenId}`)}
+                handleContinue={() =>
+                  router.push(`/market/${listing?.pixel?.id}`)
+                }
               />
               <ConformModal
                 title={`Cancel listing`}
@@ -251,7 +261,9 @@ const TokenListContent: NextPage = () => {
                 errorMessage={errorMessage}
                 successMessage="Cancelation succeed"
                 handleRetry={handleCancel}
-                handleContinue={() => router.push(`/market/${order.tokenId}`)}
+                handleContinue={() =>
+                  router.push(`/market/${listing?.pixel?.id}`)
+                }
               />
             </form>
           )}
@@ -262,10 +274,10 @@ const TokenListContent: NextPage = () => {
               <article className="z-10 flex w-96 flex-col overflow-hidden rounded-xl">
                 <div className="relative h-96 w-96">
                   <div className="relative flex h-full min-h-[inherit] w-full flex-col items-center justify-center rounded-[inherit]">
-                    {order?.pixel?.image ? (
+                    {listing?.pixel?.image ? (
                       <Image
                         layout="fill"
-                        src={parseIpfsUrl(order.pixel.image)}
+                        src={parseIpfsUrl(listing.pixel.image)}
                         alt="Asset Image"
                         // blurDataURL={blurDataURL}
                       />
@@ -275,11 +287,11 @@ const TokenListContent: NextPage = () => {
                   </div>
                 </div>
                 <h5 className="mt-5 text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
-                  {order?.pixel?.name ?? "--"}
+                  {listing?.pixel?.name ?? "--"}
                 </h5>
                 <h5 className="mt-3 text-lg font-semibold tracking-tight text-slate-900 dark:text-white">
-                  {order
-                    ? `(${order.pixel.left}, ${order.pixel.top}, ${order.pixel.right}, ${order.pixel.bottom})`
+                  {listing
+                    ? `(${listing.pixel.left}, ${listing.pixel.top}, ${listing.pixel.right}, ${listing.pixel.bottom})`
                     : "--"}
                 </h5>
               </article>

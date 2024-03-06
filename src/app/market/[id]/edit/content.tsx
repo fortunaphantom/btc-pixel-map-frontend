@@ -27,7 +27,7 @@ const confirmSteps: ConfirmStep[] = [
 ];
 
 const EditContent: NextPage = () => {
-  const { tokenId } = useParams();
+  const { id } = useParams();
   const router = useRouter();
   const [pixel, setPixel] = useState<Pixel>();
 
@@ -65,7 +65,7 @@ const EditContent: NextPage = () => {
     //generate mint param
     setActiveStep(0);
     try {
-      // mintParam = await generateUpdateParams(pixel.tokenId, {
+      // mintParam = await generateUpdateParams(pixel.id, {
       //   name,
       //   description,
       //   externalLink: link,
@@ -84,7 +84,7 @@ const EditContent: NextPage = () => {
 
     try {
       // const { hash } = await updateTokenUri({
-      //   args: [pixel.tokenId, mintParam.metadataUri],
+      //   args: [pixel.id, mintParam.metadataUri],
       // });
       // await waitForTransaction({ hash });
       await delay(5000);
@@ -107,12 +107,12 @@ const EditContent: NextPage = () => {
 
   useEffect(() => {
     setPixel(undefined);
-    if (!tokenId) {
+    if (!id) {
       return;
     }
 
-    getPixelDetail(tokenId as string).then(setPixel);
-  }, [tokenId]);
+    getPixelDetail(id as string).then(setPixel);
+  }, [id]);
 
   return (
     <div className="mx-auto flex h-full w-full max-w-2xl flex-col justify-center px-4">
@@ -213,7 +213,7 @@ const EditContent: NextPage = () => {
         errorStep={errorStep}
         errorMessage={errorMessage}
         handleRetry={() => handleMint()}
-        handleContinue={() => router.push(`/market/${pixel?.tokenId}`)}
+        handleContinue={() => router.push(`/market/${pixel?.id}`)}
         successMessage="Pixel updated successfully"
       />
     </div>

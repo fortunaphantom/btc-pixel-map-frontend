@@ -30,12 +30,7 @@ const ItemActivity: FC<Props> = ({ pixel }) => {
     async (offset: number) => {
       setLoading(true);
       try {
-        const data = await getHistory(
-          typeFilter,
-          offset,
-          undefined,
-          pixel.tokenId,
-        );
+        const data = await getHistory(typeFilter, offset, undefined, pixel.id);
 
         if (offset == 0) {
           setLoadedAll(false);
@@ -53,7 +48,7 @@ const ItemActivity: FC<Props> = ({ pixel }) => {
       }
       setLoading(false);
     },
-    [history, pixel.tokenId, typeFilter],
+    [history, pixel.id, typeFilter],
   );
 
   const toggleFilterType = useCallback(

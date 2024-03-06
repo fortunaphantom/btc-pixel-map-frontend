@@ -29,7 +29,7 @@ const ItemHeader: FC<Props> = ({ pixel }) => {
       {pixel?.ownerId == "0x1" && (
         // address
         <div className="absolute right-5 top-2 rounded-full p-2">
-          <Link href={`/market/${pixel.tokenId}/edit`} title="Edit Pixel">
+          <Link href={`/market/${pixel.id}/edit`} title="Edit Pixel">
             <FaEdit className="h-4 w-4" />
           </Link>
         </div>

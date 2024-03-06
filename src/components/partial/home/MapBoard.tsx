@@ -68,7 +68,7 @@ export const MapBoard: FC = () => {
         <map name="pixel-map">
           {pixels.map((pixel) => (
             <area
-              key={pixel.tokenId}
+              key={pixel.id}
               shape="rect"
               coords={`${pixel.left},${pixel.top},${pixel.right},${pixel.bottom}`}
               href={pixel.external_url}

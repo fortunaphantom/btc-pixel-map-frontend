@@ -1,11 +1,13 @@
 type Pixel = {
-  tokenId: string;
-  ownerId: `0x${string}`;
+  id: string;
+  sat: string;
+  ownerId: string;
 
   left: number;
   right: number;
   top: number;
   bottom: number;
+  size: number;
 
   // metadata
   image: string;
@@ -23,10 +25,11 @@ type Pixel = {
   favorites: Favorite[];
   views: View[];
   orders: OrderData[];
+  listing?: Listing;
 };
 
 type User = {
-  address: `0x${string}`;
+  address: string;
   banner?: string;
   thumbnail?: string;
   name?: string;
@@ -34,47 +37,24 @@ type User = {
 };
 
 type Favorite = {
-  tokenId: string;
-  actorId: `0x${string}`;
+  pixelId: string;
+  actorId: string;
 };
 
 type View = {
-  tokenId: string;
-  actorId: `0x${string}`;
+  pixelId: string;
+  actorId: string;
 };
 
-type OrderCreateData = {
-  trader: `0x${string}`;
-  side: Side;
-  collection: string;
-  tokenId: string;
-  paymentToken: `0x${string}`;
-  price: string;
-  listingTime: number;
-  expirationTime: number;
-  salt: string;
-  nonce: string;
-  signature: string;
-};
-
-type OrderData = {
+type Listing = {
   id: string;
-  trader: `0x${string}`;
-  side: Side | string;
-  tokenId: string;
-  paymentToken: `0x${string}`;
-  price: string;
-  listingTime: number;
-  expirationTime: number;
-  salt: string;
-  formatted: number;
+  pixelId: string;
+  psbt: string;
+  price: Int;
+  pricePerPixel: Float;
+  createdAt: string;
+  expires: string;
 
-  // signature
-  r: string;
-  s: string;
-  v: number;
-
-  creator: User;
   pixel: Pixel;
 };
 
@@ -111,8 +91,6 @@ type TokenMetadata = {
   metadata: any;
 };
 
-type ListMode = "Order" | "Auction";
-
 type SortOption = {
   title: string;
   value: string;
@@ -140,7 +118,7 @@ type ItemHistory = {
   id: number | string;
   object?: string;
   type: HistoryType;
-  tokenId: number | string;
+  pixelId: string;
   fromId: string;
   toId?: string;
   transaction?: string;

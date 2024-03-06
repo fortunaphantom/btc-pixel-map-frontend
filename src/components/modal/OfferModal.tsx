@@ -6,7 +6,6 @@ import { Button, Card, Label, Modal, TextInput } from "flowbite-react";
 import Image from "next/image";
 import { FC, useCallback, useState } from "react";
 import { FaEthereum, FaWallet } from "react-icons/fa6";
-import { DurationInput } from "../partial/market/list";
 import ConformModal from "./ConfirmModal";
 
 const confirmSteps: ConfirmStep[] = [
@@ -30,7 +29,7 @@ type Props = {
   isOpen: boolean;
   setOpen: (value: boolean) => void;
   pixel: Pixel;
-  listing?: OrderData;
+  listing?: Listing;
   bestOffer?: bigint;
 };
 
@@ -42,16 +41,16 @@ const OfferModal: FC<Props> = ({
   // bestOffer,
 }) => {
   const [price, setPrice] = useState<number>(0);
-  const [
-    ,
-    // startTime
-    setStartTime,
-  ] = useState<number>();
-  const [
-    ,
-    // endTime
-    setEndTime,
-  ] = useState<number>();
+  // const [
+  //   ,
+  //   // startTime
+  //   setStartTime,
+  // ] = useState<number>();
+  // const [
+  //   ,
+  //   // endTime
+  //   setEndTime,
+  // ] = useState<number>();
 
   // confirm modal
   const [confirmOpen, setConfirmOpen] = useState<boolean>(false);
@@ -151,7 +150,7 @@ const OfferModal: FC<Props> = ({
           </div>
           <div className="order-3 mr-4 flex flex-auto flex-col items-start justify-center self-stretch overflow-hidden">
             <div className="text-primary font-semibold">
-              <div className="font-semibold"># {pixel.tokenId}</div>
+              <div className="font-semibold"># {pixel.id}</div>
             </div>
             <span className="text-secondary text-sm text-slate-600 dark:text-slate-400">
               <div className="text-sm">
@@ -217,11 +216,11 @@ const OfferModal: FC<Props> = ({
                 <Label value="Duration" className="text-lg" />
               </div>
             </div>
-            <DurationInput
+            {/* <DurationInput
               setStartTime={setStartTime}
               setEndTime={setEndTime}
               position="top"
-            />
+            /> */}
           </div>
           <Button
             type="submit"

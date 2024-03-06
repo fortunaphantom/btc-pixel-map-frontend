@@ -3,11 +3,10 @@ import InputWrapper from "./InputWrapper";
 
 /* eslint-disable jsx-a11y/label-has-associated-control */
 type Props = {
-  mode: ListMode;
   price?: number;
 };
 
-export const SummeryView: FC<Props> = ({ mode, price }) => {
+export const SummeryView: FC<Props> = ({ price }) => {
   return (
     <InputWrapper title="Summery">
       <>
@@ -16,7 +15,7 @@ export const SummeryView: FC<Props> = ({ mode, price }) => {
             Listing price
           </div>
           <div className="" data-id="TextBody">
-            {price ?? 0} {mode == "Order" ? "ETH" : "WETH"}
+            {price ?? 0} BTC
           </div>
         </div>
         <div className="mb-2 flex flex-wrap justify-between">
@@ -32,7 +31,7 @@ export const SummeryView: FC<Props> = ({ mode, price }) => {
             Total potential earning
           </div>
           <div className="" data-id="TextBody">
-            {(price ?? 0) * 0.95} {mode == "Order" ? "ETH" : "WETH"}
+            {(price ?? 0) * 0.95} BTC
           </div>
         </div>
       </>

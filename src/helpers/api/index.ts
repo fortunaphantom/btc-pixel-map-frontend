@@ -16,16 +16,14 @@ export const getPixels = async (offset: number = 0, limit: number = 100) => {
   return data;
 };
 
-export const getPixelDetail = async (tokenId: string) => {
-  const { data } = await axios.get(`/pixel/detail/${tokenId}`);
+export const getPixelDetail = async (id: string) => {
+  const { data } = await axios.get(`/pixel/detail/${id}`);
 
   return data;
 };
 
-export const reportView = async (tokenId: string, actor: string) => {
-  const { data } = await axios.post(
-    `/pixel/view?tokenId=${tokenId}&actor=${actor}`,
-  );
+export const reportView = async (id: string, actor: string) => {
+  const { data } = await axios.post(`/pixel/view?id=${id}&actor=${actor}`);
 
   return data;
 };
@@ -47,14 +45,14 @@ export const getHistory = async (
   type: string[],
   offset: number,
   address?: string,
-  tokenId?: number | string,
+  id?: number | string,
 ) => {
   const { data } = await axios.get("/pixel/history", {
     params: {
       type,
       offset,
       address,
-      tokenId,
+      id,
     },
   });
 

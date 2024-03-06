@@ -1,101 +1,99 @@
 import { CollapsibleCard } from "@/components/common/CollapsibleCard";
-import ConformModal from "@/components/modal/ConfirmModal";
 import { useCurrentTime } from "@/contexts/CurrentTimeContext";
-import { delay, formatRemainingInterval } from "@/helpers/time";
-import { Button, Table } from "flowbite-react";
+import { formatRemainingInterval } from "@/helpers/time";
+import { Table } from "flowbite-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { FC, useCallback, useMemo, useState } from "react";
+import { FC, useMemo } from "react";
 import { FaListUl } from "react-icons/fa6";
 import { ImFilesEmpty } from "react-icons/im";
 
-const acceptOfferConfirmSteps: ConfirmStep[] = [
-  {
-    title: "Accept offer",
-    description:
-      "You'll be asked to review and transact accept transaction from your wallet.",
-  },
-];
+// const acceptOfferConfirmSteps: ConfirmStep[] = [
+//   {
+//     title: "Accept offer",
+//     description:
+//       "You'll be asked to review and transact accept transaction from your wallet.",
+//   },
+// ];
 
 type Props = {
   pixel: Pixel;
 };
 
 const ItemOffers: FC<Props> = ({ pixel }) => {
-  const router = useRouter();
+  // const router = useRouter();
   const now = useCurrentTime();
   const offers = useMemo(
     () => (pixel.orders ?? []).filter((order) => order.side == "Buy"),
     [pixel],
   );
 
-  const [acceptOfferConfirmOpen, setAcceptOfferConfirmOpen] =
-    useState<boolean>(false);
-  const [activeStep, setActiveStep] = useState<number>(0);
-  const [errorStep, setErrorStep] = useState<number>();
-  const [errorMessage, setErrorMessage] = useState<string>();
+  // const [acceptOfferConfirmOpen, setAcceptOfferConfirmOpen] =
+  //   useState<boolean>(false);
+  // const [activeStep, setActiveStep] = useState<number>(0);
+  // const [errorStep, setErrorStep] = useState<number>();
+  // const [errorMessage, setErrorMessage] = useState<string>();
 
-  const handleAcceptOffer = useCallback(
-    async (
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      offer: OrderData,
-    ) => {
-      setAcceptOfferConfirmOpen(true);
-      setErrorStep(undefined);
-      setErrorMessage(undefined);
+  // const handleAcceptOffer = useCallback(
+  //   async (
+  //     // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  //     offer: OrderData,
+  //   ) => {
+  //     setAcceptOfferConfirmOpen(true);
+  //     setErrorStep(undefined);
+  //     setErrorMessage(undefined);
 
-      try {
-        setActiveStep(0);
-        // const buyInput = {
-        //   order: {
-        //     trader: offer.trader,
-        //     side: 0,
-        //     collection: PIXEL_CONTRACT_ADDRESS,
-        //     tokenId: offer.tokenId,
-        //     paymentToken: offer.paymentToken,
-        //     price: offer.price,
-        //     listingTime: offer.listingTime,
-        //     expirationTime: offer.expirationTime,
-        //     salt: offer.salt,
-        //   },
-        //   r: offer.r,
-        //   s: offer.s,
-        //   v: offer.v,
-        // };
-        // const sellInput = {
-        //   order: {
-        //     trader: address,
-        //     side: 1,
-        //     collection: PIXEL_CONTRACT_ADDRESS,
-        //     tokenId: offer.tokenId,
-        //     paymentToken: offer.paymentToken,
-        //     price: offer.price,
-        //     listingTime: 0,
-        //     expirationTime: offer.expirationTime,
-        //     salt: 0,
-        //   },
-        //   r: zeroHash,
-        //   s: zeroHash,
-        //   v: 0,
-        // };
-        // const { hash } = await execute({
-        //   args: [sellInput, buyInput],
-        // });
-        // await waitForTransaction({ hash });
-        await delay(5000);
-      } catch (err: any) {
-        console.log(err);
-        setErrorStep(0);
-        setErrorMessage(err?.shortMessage ?? "Something went wrong");
-        return;
-      }
+  //     try {
+  //       setActiveStep(0);
+  //       // const buyInput = {
+  //       //   order: {
+  //       //     trader: offer.trader,
+  //       //     side: 0,
+  //       //     collection: PIXEL_CONTRACT_ADDRESS,
+  //       //     tokenId: offer.tokenId,
+  //       //     paymentToken: offer.paymentToken,
+  //       //     price: offer.price,
+  //       //     listingTime: offer.listingTime,
+  //       //     expirationTime: offer.expirationTime,
+  //       //     salt: offer.salt,
+  //       //   },
+  //       //   r: offer.r,
+  //       //   s: offer.s,
+  //       //   v: offer.v,
+  //       // };
+  //       // const sellInput = {
+  //       //   order: {
+  //       //     trader: address,
+  //       //     side: 1,
+  //       //     collection: PIXEL_CONTRACT_ADDRESS,
+  //       //     tokenId: offer.tokenId,
+  //       //     paymentToken: offer.paymentToken,
+  //       //     price: offer.price,
+  //       //     listingTime: 0,
+  //       //     expirationTime: offer.expirationTime,
+  //       //     salt: 0,
+  //       //   },
+  //       //   r: zeroHash,
+  //       //   s: zeroHash,
+  //       //   v: 0,
+  //       // };
+  //       // const { hash } = await execute({
+  //       //   args: [sellInput, buyInput],
+  //       // });
+  //       // await waitForTransaction({ hash });
+  //       await delay(5000);
+  //     } catch (err: any) {
+  //       console.log(err);
+  //       setErrorStep(0);
+  //       setErrorMessage(err?.shortMessage ?? "Something went wrong");
+  //       return;
+  //     }
 
-      setActiveStep(1);
-    },
-    [
-      // address, execute
-    ],
-  );
+  //     setActiveStep(1);
+  //   },
+  //   [
+  //     // address, execute
+  //   ],
+  // );
 
   return (
     <div className="my-4 flex w-full px-5">
@@ -134,7 +132,7 @@ const ItemOffers: FC<Props> = ({ pixel }) => {
                       // address
                       "0x1" == pixel.ownerId && (
                         <Table.Cell className="flex justify-end">
-                          <Button
+                          {/* <Button
                             outline
                             onClick={() => handleAcceptOffer(offer)}
                           >
@@ -154,7 +152,7 @@ const ItemOffers: FC<Props> = ({ pixel }) => {
                               setAcceptOfferConfirmOpen(false);
                               router.refresh();
                             }}
-                          />
+                          /> */}
                         </Table.Cell>
                       )
                     }

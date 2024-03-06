@@ -122,7 +122,7 @@ const UserActivity: FC<Props> = ({ address }) => {
                 className="bg-white dark:border-slate-700 dark:bg-slate-800"
               >
                 <Table.Cell className="whitespace-nowrap font-medium text-slate-900 dark:text-white">
-                  <Link href={`/market/${item.pixel.tokenId}`}>
+                  <Link href={`/market/${item.pixel.id}`}>
                     <div className="flex max-w-[12vw] items-center">
                       <div className="relative h-10 w-10 overflow-hidden rounded-sm">
                         <div className="relative flex h-full min-h-[inherit] w-full flex-col items-center justify-center rounded-[inherit]">
