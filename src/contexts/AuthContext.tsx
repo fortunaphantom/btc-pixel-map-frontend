@@ -50,7 +50,7 @@ const AuthContextProvider: React.FC<PropsWithChildren> = ({ children }) => {
   );
 
   const refreshToken = useCallback(async () => {
-    if (!address?.ordinals) {
+    if (!address?.ordinals || !address?.payments) {
       setAuthorized(false);
       setAccessToken("");
       return;
@@ -61,7 +61,7 @@ const AuthContextProvider: React.FC<PropsWithChildren> = ({ children }) => {
       const signature = await signMsg(address.ordinals, challenge);
       const data = await signIn(
         address.ordinals,
-        address.ordinals,
+        address.payments,
         challenge,
         signature as string,
       );
@@ -75,7 +75,7 @@ const AuthContextProvider: React.FC<PropsWithChildren> = ({ children }) => {
       console.log(err);
       toast.error(err?.message ?? err?.response?.reason);
     }
-  }, [address?.ordinals, signMsg]);
+  }, [address.ordinals, address.payments, signMsg]);
 
   const axiosInstance = useMemo(() => {
     const instance = axios.create({

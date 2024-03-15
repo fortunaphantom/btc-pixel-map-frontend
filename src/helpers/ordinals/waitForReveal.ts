@@ -1,4 +1,4 @@
-import { isDevelopment } from "@/config";
+import { network } from "@/config";
 import mempoolJS from "@mempool/mempool.js";
 import { getRevealState } from "../api/mint";
 import { delay } from "../time";
@@ -8,7 +8,7 @@ export const waitForReveal = async (account: string, depositTx: string) => {
     bitcoin: { transactions },
   } = mempoolJS({
     hostname: "mempool.space",
-    network: isDevelopment ? "testnet" : "mainnet",
+    network,
   });
 
   // wait while deposit transaction to be confirmed
@@ -17,7 +17,7 @@ export const waitForReveal = async (account: string, depositTx: string) => {
     if (status.confirmed) {
       break;
     }
-    await delay(1000);
+    await delay(2000);
   }
 
   // wait 10s
@@ -29,6 +29,6 @@ export const waitForReveal = async (account: string, depositTx: string) => {
     if (status.confirmed) {
       break;
     }
-    await delay(1000);
+    await delay(2000);
   }
 };

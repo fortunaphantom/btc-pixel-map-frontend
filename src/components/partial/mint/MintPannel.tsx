@@ -189,6 +189,7 @@ export const MintPanel: FC<Props> = ({
               <FloatingLabel
                 variant="outlined"
                 label="X"
+                name="x"
                 sizing="sm"
                 value={rect?.x}
                 onChange={(e) =>
@@ -206,6 +207,7 @@ export const MintPanel: FC<Props> = ({
               <FloatingLabel
                 variant="outlined"
                 label="Y"
+                name="y"
                 sizing="sm"
                 value={rect?.y}
                 onChange={(e) =>
@@ -223,6 +225,7 @@ export const MintPanel: FC<Props> = ({
               <FloatingLabel
                 variant="outlined"
                 label="Width"
+                name="width"
                 sizing="sm"
                 value={rect?.width}
                 onChange={(e) =>
@@ -240,6 +243,7 @@ export const MintPanel: FC<Props> = ({
               <FloatingLabel
                 variant="outlined"
                 label="Height"
+                name="height"
                 sizing="sm"
                 value={rect?.height}
                 onChange={(e) =>
@@ -281,6 +285,7 @@ export const MintPanel: FC<Props> = ({
                 variant="outlined"
                 label="Name"
                 sizing="sm"
+                name="name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 required
@@ -290,6 +295,7 @@ export const MintPanel: FC<Props> = ({
               <FloatingLabel
                 variant="outlined"
                 label="Description"
+                name="description"
                 sizing="sm"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
@@ -300,6 +306,7 @@ export const MintPanel: FC<Props> = ({
               <FloatingLabel
                 variant="outlined"
                 label="Link"
+                name="link"
                 sizing="sm"
                 value={link}
                 onChange={(e) => setLink(e.target.value)}

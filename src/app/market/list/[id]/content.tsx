@@ -14,6 +14,7 @@ import { parseIpfsUrl } from "@/helpers";
 import { getListPsbt, getListingDetail } from "@/helpers/api/market";
 import { delay } from "@/helpers/time";
 import { useSign } from "@/hooks";
+import * as bitcoin from "bitcoinjs-lib";
 import { Button, Spinner } from "flowbite-react";
 import { NextPage } from "next";
 import Image from "next/image";
@@ -101,13 +102,16 @@ const TokenListContent: NextPage = () => {
     try {
       setActiveStep(1);
       const signedPsbt = await sign(address.ordinals, psbt, {
-        finalize: false,
+        finalize: true,
         extractTx: false,
+        sigHash:
+          bitcoin.Transaction.SIGHASH_SINGLE |
+          bitcoin.Transaction.SIGHASH_ANYONECANPAY,
       });
-      if (!signedPsbt.base64) {
+      if (!signedPsbt.hex) {
         throw new Error("Signing failed!");
       }
-      signedPsbtStr = signedPsbt.base64;
+      signedPsbtStr = signedPsbt.hex;
     } catch (err: any) {
       console.log(err);
       setErrorStep(1);

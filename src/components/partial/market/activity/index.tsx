@@ -16,7 +16,6 @@ import toast from "react-hot-toast";
 import { FaExternalLinkAlt, FaTimes } from "react-icons/fa";
 
 const MarketActivity: FC = () => {
-  // const { address } = useAccount();
   const now = useCurrentTime();
 
   const [typeFilter, setTypeFilter] = useState<FilterType[]>([
@@ -92,6 +91,9 @@ const MarketActivity: FC = () => {
             </Dropdown.Item>
             <Dropdown.Item onClick={() => toggleFilterType("Listing")}>
               Listing
+            </Dropdown.Item>
+            <Dropdown.Item onClick={() => toggleFilterType("Cancel")}>
+              Cancel
             </Dropdown.Item>
           </Dropdown>
         </div>

@@ -49,7 +49,6 @@ type View = {
 type Listing = {
   id: string;
   pixelId: string;
-  psbt: string;
   price: Int;
   pricePerPixel: Float;
   createdAt: string;
@@ -110,9 +109,9 @@ type FilterOption = {
   };
 };
 
-type HistoryType = "Reveal" | "Transfer" | "Listing" | "Sale";
+type HistoryType = "Reveal" | "Transfer" | "Listing" | "Sale" | "Cancel";
 
-type FilterType = "Reveal" | "Transfer" | "Listing" | "Sale";
+type FilterType = "Reveal" | "Transfer" | "Listing" | "Sale" | "Cancel";
 
 type ItemHistory = {
   id: number | string;

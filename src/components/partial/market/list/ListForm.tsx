@@ -6,6 +6,7 @@ import { useAuthContext } from "@/contexts/AuthContext";
 import { useConnect } from "@/contexts/WalletConnectProvider";
 import { getListPsbt } from "@/helpers/api/market";
 import { useSign } from "@/hooks";
+import * as bitcoin from "bitcoinjs-lib";
 import { Button } from "flowbite-react";
 import { useRouter } from "next/navigation";
 import { FC, useCallback, useMemo, useState } from "react";
@@ -76,7 +77,6 @@ export const ListForm: FC<Props> = ({ pixel }) => {
       console.log(err);
       setErrorStep(0);
       setErrorMessage(err?.response?.data?.reason ?? "Something went wrong");
-      // refetch();
       return;
     }
 
@@ -84,18 +84,20 @@ export const ListForm: FC<Props> = ({ pixel }) => {
     try {
       setActiveStep(1);
       const signedPsbt = await sign(address.ordinals, psbt, {
-        finalize: false,
+        finalize: true,
         extractTx: false,
+        sigHash:
+          bitcoin.Transaction.SIGHASH_SINGLE |
+          bitcoin.Transaction.SIGHASH_ANYONECANPAY,
       });
-      if (!signedPsbt.base64) {
+      if (!signedPsbt.hex) {
         throw new Error("Signing failed!");
       }
-      signedPsbtStr = signedPsbt.base64;
+      signedPsbtStr = signedPsbt.hex;
     } catch (err: any) {
       console.log(err);
       setErrorStep(1);
       setErrorMessage(err ?? "Something went wrong");
-      // refetch();
       return;
     }
 

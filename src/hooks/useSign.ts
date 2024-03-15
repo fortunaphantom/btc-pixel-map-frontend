@@ -23,8 +23,6 @@ export function useSign() {
 
           const unsignedPsbt = Psbt.fromBase64(unsignedPsbtBase64);
 
-          console.log(unsignedPsbt);
-
           const signedPsbt = await signPsbt({
             address,
             wallet,
@@ -32,7 +30,6 @@ export function useSign() {
             psbt: unsignedPsbt,
             options: {
               ...options,
-              sigHash: unsignedPsbt?.data?.inputs?.[0]?.sighashType,
             },
           });
 

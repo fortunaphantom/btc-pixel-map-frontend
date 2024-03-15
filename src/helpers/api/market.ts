@@ -15,6 +15,25 @@ export const getListPsbt = async (
   return data;
 };
 
+export const getBuyPsbt = async (
+  id: string,
+  address: string,
+  publicKey: string,
+  receiveAddress: string,
+  feeRate: number,
+) => {
+  const { data } = await axios.get(`/pixel/buy/psbt/${id}`, {
+    params: {
+      address,
+      publicKey,
+      receiveAddress,
+      feeRate,
+    },
+  });
+
+  return data;
+};
+
 export const getAuctionDetail = async (id: string) => {
   const { data } = await axios.get(`/pixel/auction/${id}`);
   return data;

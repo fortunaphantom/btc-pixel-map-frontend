@@ -50,6 +50,7 @@ export default async function signPsbt({
   if (wallet === Wallet.XVERSE) {
     const getAllInputIndices = () =>
       psbt.data.inputs.map((value, index) => index);
+
     return await signXversePsbt(psbt, {
       network,
       inputsToSign: [

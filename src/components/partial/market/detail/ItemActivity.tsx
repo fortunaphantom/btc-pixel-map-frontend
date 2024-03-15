@@ -97,6 +97,9 @@ const ItemActivity: FC<Props> = ({ pixel }) => {
               <Dropdown.Item onClick={() => toggleFilterType("Listing")}>
                 Listing
               </Dropdown.Item>
+              <Dropdown.Item onClick={() => toggleFilterType("Cancel")}>
+                Cancel
+              </Dropdown.Item>
             </Dropdown>
           </div>
           <div className="flex flex-1 gap-1">
