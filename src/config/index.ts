@@ -11,6 +11,8 @@ export const WETH_ADDRESS = process.env
   .NEXT_PUBLIC_WETH_ADDRESS as `0x${string}`;
 export const SUBGRAPH_URL = process.env.NEXT_PUBLIC_SUBGRAPH_URL!;
 export const IPFS_GATEWAY = process.env.NEXT_PUBLIC_IPFS_GATEWAY!;
-export const EXPLORER_URL = process.env.NEXT_PUBLIC_EXPLORER_URL!;
+export const EXPLORER_URL = isDevelopment
+  ? "https://mempool.space/testnet/"
+  : "https://mempool.space/";
 
 export const network = isDevelopment ? "testnet" : "mainnet";

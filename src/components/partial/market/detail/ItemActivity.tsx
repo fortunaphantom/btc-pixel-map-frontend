@@ -2,6 +2,8 @@ import { CollapsibleCard } from "@/components/common/CollapsibleCard";
 import { Loader } from "@/components/common/Loader";
 import { EXPLORER_URL } from "@/config";
 import { useCurrentTime } from "@/contexts/CurrentTimeContext";
+import { useConnect } from "@/contexts/WalletConnectProvider";
+import { shortenString } from "@/helpers";
 import { getHistory } from "@/helpers/api";
 import { formatRemainingInterval } from "@/helpers/time";
 import { Button, Dropdown, Table } from "flowbite-react";
@@ -17,6 +19,7 @@ type Props = {
 
 const ItemActivity: FC<Props> = ({ pixel }) => {
   const now = useCurrentTime();
+  const { address } = useConnect();
 
   const [typeFilter, setTypeFilter] = useState<FilterType[]>([
     "Transfer",
@@ -130,18 +133,16 @@ const ItemActivity: FC<Props> = ({ pixel }) => {
                     {item.type}
                   </Table.Cell>
                   <Table.Cell>
-                    {/* {item?.data
-                      ? `${formatBigIntWithUnits(BigInt(item.data))} ETH`
-                      : "-"} */}
+                    {item?.data ? `${+item.data / 100_000_000} BTC` : "-"}
                   </Table.Cell>
                   <Table.Cell>
                     <Link
                       href={`/profile/${item.fromId}`}
                       className="font-medium text-blue-600 hover:underline dark:text-blue-500"
                     >
-                      {/* {address == item.fromId
+                      {address?.ordinals == item.fromId
                         ? "You"
-                        : item?.from?.name ?? shortenString(item.fromId)} */}
+                        : item?.from?.name ?? shortenString(item.fromId)}
                     </Link>
                   </Table.Cell>
                   <Table.Cell>
@@ -150,9 +151,9 @@ const ItemActivity: FC<Props> = ({ pixel }) => {
                         href={`/profile/${item.toId}`}
                         className="font-medium text-blue-600 hover:underline dark:text-blue-500"
                       >
-                        {/* {address == item.toId
+                        {address?.ordinals == item.toId
                           ? "You"
-                          : item?.to?.name ?? shortenString(item.toId)} */}
+                          : item?.to?.name ?? shortenString(item.toId)}
                       </Link>
                     ) : (
                       "-"

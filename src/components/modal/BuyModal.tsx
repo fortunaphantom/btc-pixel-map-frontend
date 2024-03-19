@@ -106,10 +106,10 @@ const BuyModal: FC<Props> = ({ isOpen, setOpen, pixel }) => {
       return;
     }
 
-    let psbt: string;
+    let tx: any;
     try {
       setActiveStep(1);
-      psbt = await getBuyPsbt(
+      tx = await getBuyPsbt(
         pixel.listing.id,
         address.payments,
         publicKey.payments,
@@ -126,9 +126,9 @@ const BuyModal: FC<Props> = ({ isOpen, setOpen, pixel }) => {
     let signedTxHex: string;
     try {
       setActiveStep(2);
-      const signedTx = await sign(address.payments, psbt, {
+      const signedTx = await sign(address.payments, tx.psbt, {
         sigHash: bitcoin.Transaction.SIGHASH_ALL,
-        signingIndexes: [0, 1, 3],
+        signingIndexes: tx.inputsToSign.signingIndexes,
         finalize: true,
         extractTx: true,
       });
@@ -139,7 +139,7 @@ const BuyModal: FC<Props> = ({ isOpen, setOpen, pixel }) => {
     } catch (err: any) {
       console.log(err);
       setErrorStep(2);
-      setErrorMessage(err?.response?.data?.reason ?? "Something went wrong");
+      setErrorMessage(err?.message ?? err ?? "Something went wrong");
       return;
     }
 
