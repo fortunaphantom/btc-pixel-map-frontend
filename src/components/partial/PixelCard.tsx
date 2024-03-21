@@ -1,9 +1,9 @@
 import { useCurrentTime } from "@/contexts/CurrentTimeContext";
-import { formatNumberWithUnit, parseIpfsUrl } from "@/helpers";
+import { formatBtcWithUnit, parseIpfsUrl } from "@/helpers";
 // import { dynamicBlurDataUrl } from "@/helpers/image";
 import { Card } from "flowbite-react";
 import Image from "next/image";
-import { FC } from "react";
+import { FC, useMemo } from "react";
 
 type CardProps = {
   pixel: Pixel;
@@ -11,6 +11,14 @@ type CardProps = {
 
 const PixelCard: FC<CardProps> = ({ pixel }) => {
   const now = useCurrentTime();
+
+  const listingExpires = useMemo(() => {
+    if (!pixel?.listing) {
+      return 0;
+    }
+
+    return Math.round(new Date(pixel.listing.expires).getTime() / 1000);
+  }, [pixel?.listing]);
   // const [blurDataURL, setBlurDataURL] = useState<string>();
 
   // useEffect(() => {
@@ -49,13 +57,13 @@ const PixelCard: FC<CardProps> = ({ pixel }) => {
           {pixel.name}
         </h5>
         <p className="h-5 w-full overflow-hidden text-ellipsis whitespace-nowrap text-sm font-bold tracking-tight text-slate-900 dark:text-white">
-          {pixel?.price && (pixel?.priceExpiration ?? 0) >= now
-            ? `Price: ${formatNumberWithUnit(pixel?.price)} ETH`
+          {pixel?.listing?.price && listingExpires >= now
+            ? `Price: ${formatBtcWithUnit(pixel.listing.price)} BTC`
             : " "}
         </p>
         <p className="h-4 w-full overflow-hidden text-ellipsis whitespace-nowrap text-xs font-bold tracking-tight text-slate-700 dark:text-slate-300">
           {pixel?.lastPrice
-            ? `Last Sale: ${formatNumberWithUnit(pixel?.lastPrice)} ETH`
+            ? `Last Sale: ${formatBtcWithUnit(pixel?.lastPrice)} BTC`
             : " "}
         </p>
       </div>

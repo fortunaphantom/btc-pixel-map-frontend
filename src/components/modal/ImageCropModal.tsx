@@ -54,6 +54,7 @@ const ImageCropModal: FC<Props> = ({
             height: Math.round(size.height / zoomPixel),
           },
           size,
+          0,
         ).then(setCroppedImage),
       200,
     );

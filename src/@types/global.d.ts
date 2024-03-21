@@ -18,8 +18,6 @@ type Pixel = {
   lastPrice?: number;
   lastSold?: number;
   recentList?: number;
-  price?: number;
-  priceExpiration?: number;
 
   owner: User;
   favorites: Favorite[];
@@ -95,7 +93,7 @@ type SortOption = {
   value: string;
 };
 
-type ItemStatus = "list" | "auction" | "offer";
+type ItemStatus = "list";
 
 type FilterOption = {
   status?: ItemStatus[];

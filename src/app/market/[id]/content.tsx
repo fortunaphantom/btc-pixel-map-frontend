@@ -7,7 +7,6 @@ import {
   ItemCounts,
   ItemDetails,
   ItemHeader,
-  ItemOffers,
   ItemSummery,
 } from "@/components/partial/market/detail";
 import { useConnect } from "@/contexts/WalletConnectProvider";
@@ -47,13 +46,13 @@ const TokenDetailContent: NextPage = () => {
         <div className="grid h-full w-full grid-cols-10 pt-5">
           <div className="relative col-span-4 p-2">
             <ItemSummery pixel={pixel} refreshPixel={refreshPixel} />
-            <ItemDetails pixel={pixel} />
           </div>
           <div className="col-span-6 flex flex-col">
             <ItemHeader pixel={pixel} />
             <ItemCounts pixel={pixel} />
             <ItemActions pixel={pixel} />
-            <ItemOffers pixel={pixel} />
+            <ItemDetails pixel={pixel} />
+            {/* <ItemOffers pixel={pixel} /> */}
           </div>
           <div className="col-span-full">
             <ItemActivity pixel={pixel} />

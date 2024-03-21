@@ -11,7 +11,7 @@ const HomeContent: NextPage = () => {
         "relative h-full overflow-auto transition-all duration-200",
       )}
     >
-      <div className="m-auto h-full w-fit max-w-full overflow-auto">
+      <div className="bg-grid m-auto h-full w-fit max-w-full overflow-auto">
         <MapBoard />
       </div>
     </div>

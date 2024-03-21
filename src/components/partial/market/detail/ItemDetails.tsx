@@ -10,7 +10,7 @@ type Props = {
 
 const ItemDetails: FC<Props> = ({ pixel }) => {
   return (
-    <div className="my-4 flex w-full">
+    <div className="my-4 flex w-full px-5">
       <CollapsibleCard
         title="Details"
         icon={<BiDetail className="h-5 w-5" />}

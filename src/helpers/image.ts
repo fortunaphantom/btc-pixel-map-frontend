@@ -1,3 +1,4 @@
+/* eslint-disable security/detect-object-injection */
 const baseUrl =
   process.env.NODE_ENV === "development"
     ? "http://localhost:3000/"
@@ -7,6 +8,7 @@ export const extractSubImage = async (
   originalImagePath: string,
   rect: MintRect,
   size: Size,
+  pixelationFactor: number,
 ): Promise<string | undefined> => {
   return new Promise((resolve, reject) => {
     const img = new Image();
@@ -32,6 +34,31 @@ export const extractSubImage = async (
         size.width,
         size.height,
       );
+
+      const originalImageData = ctx.getImageData(
+        0,
+        0,
+        size.width,
+        size.height,
+      ).data;
+
+      if (pixelationFactor !== 0) {
+        for (let y = 0; y < size.height; y += pixelationFactor) {
+          for (let x = 0; x < size.width; x += pixelationFactor) {
+            // extracting the position of the sample pixel
+            const pixelIndexPosition = (x + y * size.width) * 4;
+            // drawing a square replacing the current pixels
+            ctx.fillStyle = `rgba(
+              ${originalImageData[pixelIndexPosition]},
+              ${originalImageData[pixelIndexPosition + 1]},
+              ${originalImageData[pixelIndexPosition + 2]},
+              ${originalImageData[pixelIndexPosition + 3]}
+            )`;
+            ctx.fillRect(x, y, pixelationFactor, pixelationFactor);
+          }
+        }
+      }
+
       const dataUrl = canvas.toDataURL(); // Get the data URL of the subimage
 
       resolve(dataUrl);

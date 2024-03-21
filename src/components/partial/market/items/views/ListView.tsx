@@ -1,10 +1,11 @@
 import { useCurrentTime } from "@/contexts/CurrentTimeContext";
-import { formatNumberWithUnit, parseIpfsUrl } from "@/helpers";
+import { useConnect } from "@/contexts/WalletConnectProvider";
+import { formatBtcWithUnit, parseIpfsUrl, shortenString } from "@/helpers";
 import { formatRemainingInterval } from "@/helpers/time";
 import { Table } from "flowbite-react";
 import Image from "next/image";
 import Link from "next/link";
-import { FC } from "react";
+import { FC, useMemo } from "react";
 
 type Props = {
   pixels: Pixel[];
@@ -16,7 +17,6 @@ const ListView: FC<Props> = ({ pixels }) => {
       <Table.Head>
         <Table.HeadCell>Item</Table.HeadCell>
         <Table.HeadCell>Current Price</Table.HeadCell>
-        <Table.HeadCell>Best Offer</Table.HeadCell>
         <Table.HeadCell>Last Sale</Table.HeadCell>
         <Table.HeadCell>Owner</Table.HeadCell>
         <Table.HeadCell>Expires In</Table.HeadCell>
@@ -38,6 +38,15 @@ type RowProps = {
 
 const ListRow: FC<RowProps> = ({ pixel }) => {
   const now = useCurrentTime();
+  const { address } = useConnect();
+
+  const listingExpires = useMemo(() => {
+    if (!pixel?.listing) {
+      return 0;
+    }
+
+    return Math.round(new Date(pixel.listing.expires).getTime() / 1000);
+  }, [pixel?.listing]);
 
   // const bestOffer = useMemo(() => {
   //   const offers = (pixel.orders ?? []).filter((order) => order.side == "Buy");
@@ -83,30 +92,23 @@ const ListRow: FC<RowProps> = ({ pixel }) => {
         </Link>
       </Table.Cell>
       <Table.Cell>
-        {pixel?.price && (pixel?.priceExpiration ?? 0) >= now
-          ? `${formatNumberWithUnit(pixel.price)} ETH`
-          : "--"}
+        {pixel?.listing?.price && listingExpires >= now
+          ? `Price: ${formatBtcWithUnit(pixel.listing.price)} BTC`
+          : " "}
       </Table.Cell>
       <Table.Cell>
-        {/* {bestOffer?.formatted && (bestOffer?.expirationTime ?? 0) >= now
-          ? `${formatNumberWithUnit(bestOffer.formatted)} ETH`
-          : "--"} */}
-      </Table.Cell>
-      <Table.Cell>
-        {pixel?.lastPrice
-          ? `${formatNumberWithUnit(pixel?.lastPrice)} ETH`
-          : "--"}
+        {pixel?.lastPrice ? `${formatBtcWithUnit(pixel?.lastPrice)} BTC` : "--"}
       </Table.Cell>
       <Table.Cell>
         <Link href={`/profile/${pixel.ownerId}`}>
-          {/* {pixel.ownerId == address
+          {pixel.ownerId == address?.ordinals
             ? "You"
-            : pixel.owner?.name ?? shortenString(pixel.ownerId)} */}
+            : pixel.owner?.name ?? shortenString(pixel.ownerId)}
         </Link>
       </Table.Cell>
       <Table.Cell>
-        {(pixel?.priceExpiration ?? 0) >= now
-          ? formatRemainingInterval((pixel.priceExpiration ?? 0) - now)
+        {(listingExpires ?? 0) >= now
+          ? formatRemainingInterval((listingExpires ?? 0) - now)
           : "--"}
       </Table.Cell>
     </Table.Row>

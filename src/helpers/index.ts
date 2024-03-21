@@ -25,11 +25,13 @@ export const shortenString = (
   );
 };
 
-export const formatNumberWithUnit = (
+export const formatBtcWithUnit = (
   amount: number,
   displayDecimals: number = 2,
   // eslint-disable-next-line sonarjs/cognitive-complexity
 ) => {
+  const amountInBtc = amount / 100_000_000;
+
   const lookup = [
     { value: 1, symbol: "" },
     { value: 1e3, symbol: "k" },
@@ -45,37 +47,38 @@ export const formatNumberWithUnit = (
     .slice()
     .reverse()
     .find(function (item) {
-      return amount >= item.value;
+      return amountInBtc >= item.value;
     });
 
   if (!item) {
     let i = 0;
     for (; ; i--) {
-      if (amount >= Math.pow(10, i)) {
+      if (amountInBtc >= Math.pow(10, i)) {
         break;
       }
     }
 
     if (i <= 3) {
-      return `${Math.round(amount * 1000000) / 1000000}`;
+      return `${Math.round(amountInBtc * 1000000) / 1000000}`;
     }
 
-    return `${(amount / Math.pow(10, i)).toFixed(displayDecimals)}*1e${i}`;
+    return `${(amountInBtc / Math.pow(10, i)).toFixed(displayDecimals)}*1e${i}`;
   }
 
-  if (amount > 1000 * (item?.value ?? 1)) {
+  if (amountInBtc > 1000 * (item?.value ?? 1)) {
     let i = 21;
     for (; ; i++) {
-      if (amount < Math.pow(10, i + 1)) {
+      if (amountInBtc < Math.pow(10, i + 1)) {
         break;
       }
     }
 
-    return `${(amount / Math.pow(10, i)).toFixed(displayDecimals)}*1e${i}`;
+    return `${(amountInBtc / Math.pow(10, i)).toFixed(displayDecimals)}*1e${i}`;
   }
 
   return (
-    (amount / (item?.value ?? 1)).toFixed(displayDecimals).replace(rx, "$1") +
-    (item?.symbol ?? "")
+    (amountInBtc / (item?.value ?? 1))
+      .toFixed(displayDecimals)
+      .replace(rx, "$1") + (item?.symbol ?? "")
   );
 };

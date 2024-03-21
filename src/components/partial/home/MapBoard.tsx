@@ -27,7 +27,7 @@ export const MapBoard: FC = () => {
             type="button"
             disabled={zoom > 8}
             onClick={() => setZoom(zoom * 1.2)}
-            gradientDuoTone="cyanToBlue"
+            color="dark"
           >
             <RiZoomInFill className="h-5 w-5" />
           </Button>
@@ -35,7 +35,7 @@ export const MapBoard: FC = () => {
             type="button"
             disabled={zoom < 0.5}
             onClick={() => setZoom(zoom / 1.2)}
-            gradientDuoTone="cyanToBlue"
+            color="dark"
           >
             <RiZoomOutFill className="h-5 w-5" />
           </Button>
@@ -43,7 +43,7 @@ export const MapBoard: FC = () => {
             type="button"
             onClick={() => setZoom(1)}
             disabled={zoom == 1}
-            gradientDuoTone="cyanToBlue"
+            color="dark"
           >
             <MdOutlineZoomInMap className="h-5 w-5" />
           </Button>
@@ -61,7 +61,7 @@ export const MapBoard: FC = () => {
             height={1000}
             src={parseIpfsUrl(mapImage)}
             alt="Map Image"
-            className="absolute left-0 top-0 bg-orange-400"
+            className="absolute left-0 top-0"
             useMap="#pixel-map"
           />
         )}

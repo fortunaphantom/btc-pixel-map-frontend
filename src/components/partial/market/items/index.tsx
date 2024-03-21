@@ -168,26 +168,6 @@ const MarketItems: FC = ({}) => {
                 >
                   Listed
                 </Button>
-                <Button
-                  color={
-                    (filter?.status ?? []).includes("auction")
-                      ? "light"
-                      : "gray"
-                  }
-                  size="sm"
-                  onClick={() => toggleStatus("auction")}
-                >
-                  On auction
-                </Button>
-                <Button
-                  color={
-                    (filter?.status ?? []).includes("offer") ? "light" : "gray"
-                  }
-                  size="sm"
-                  onClick={() => toggleStatus("offer")}
-                >
-                  Has offers
-                </Button>
               </div>
             </CollapsibleCard>
             <CollapsibleCard title="Price" opened={false}>

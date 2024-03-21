@@ -150,7 +150,7 @@ const MapBoard: FC<Props> = ({
             type="button"
             disabled={zoom > 8}
             onClick={() => setZoom(zoom * 1.2)}
-            gradientDuoTone="cyanToBlue"
+            color="dark"
           >
             <RiZoomInFill className="h-5 w-5" />
           </Button>
@@ -158,7 +158,7 @@ const MapBoard: FC<Props> = ({
             type="button"
             disabled={zoom < 0.5}
             onClick={() => setZoom(zoom / 1.2)}
-            gradientDuoTone="cyanToBlue"
+            color="dark"
           >
             <RiZoomOutFill className="h-5 w-5" />
           </Button>
@@ -166,7 +166,7 @@ const MapBoard: FC<Props> = ({
             type="button"
             onClick={() => setZoom(1)}
             disabled={zoom == 1}
-            gradientDuoTone="cyanToBlue"
+            color="dark"
           >
             <MdOutlineZoomInMap className="h-5 w-5" />
           </Button>
