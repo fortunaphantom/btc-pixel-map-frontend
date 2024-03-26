@@ -1,7 +1,7 @@
 import axios from "../axios";
 
 export const getListPsbt = async (
-  id: string,
+  id: string | number,
   publicKey: string,
   price: number,
 ) => {

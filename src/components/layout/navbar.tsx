@@ -1,3 +1,5 @@
+"use client";
+
 import { useSidebarContext } from "@/contexts/SidebarContext";
 import { isSmallScreen } from "@/helpers/is-small-screen";
 import { DarkThemeToggle, Navbar } from "flowbite-react";

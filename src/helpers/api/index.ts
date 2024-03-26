@@ -22,7 +22,7 @@ export const getPixelDetail = async (id: string) => {
   return data;
 };
 
-export const reportView = async (id: string, actor: string) => {
+export const reportView = async (id: string | number, actor: string) => {
   const { data } = await axios.post(`/pixel/view?id=${id}&actor=${actor}`);
 
   return data;

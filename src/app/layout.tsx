@@ -13,7 +13,7 @@ const RootLayout: FC<PropsWithChildren> = function ({ children }) {
   return (
     <html lang="en">
       <head>
-        <ThemeModeScript />
+        <ThemeModeScript mode="dark" />
       </head>
       <body
         className={twMerge("bg-slate-50 dark:bg-slate-900", inter.className)}

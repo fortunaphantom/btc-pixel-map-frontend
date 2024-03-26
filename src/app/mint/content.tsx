@@ -22,7 +22,7 @@ const MintPageContent: NextPage = () => {
         isOpen && "lg:mr-64 xl:mr-72 2xl:mr-80",
       )}
     >
-      <div className="bg-grid m-auto h-full w-fit max-w-full overflow-auto">
+      <div className="m-auto h-full w-fit max-w-full overflow-auto">
         <MapBoard
           rect={rect}
           setRect={setRect}

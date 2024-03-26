@@ -5,6 +5,7 @@ type UpdatePayload = {
   description: string;
   externalLink: string;
   image: string;
+  feeRate: number;
 };
 
 type CreatePayload = {
@@ -27,20 +28,20 @@ type RevealTransaction = {
   checked: boolean;
 };
 
-export const getMintSign = async (payload: CreatePayload) => {
+export const getMintPsbt = async (payload: CreatePayload) => {
   const { data } = await axios.post(`/pixel/create`, payload);
   return data as MintParam;
 };
 
-export const generateUpdateParams = async (
-  tokenId: number | string,
+export const getUpdatePsbt = async (
+  id: string | number,
   payload: UpdatePayload,
 ) => {
-  const { data } = await axios.post(`/pixel/update/${tokenId}`, payload);
+  const { data } = await axios.post(`/pixel/update/${id}`, payload);
   return data as MintParam;
 };
 
 export const getRevealState = async (account: string) => {
-  const { data } = await axios.get(`/pixel/reveal-state?account=${account}`);
+  const { data } = await axios.get(`/pixel/watch?account=${account}`);
   return data as RevealTransaction;
 };

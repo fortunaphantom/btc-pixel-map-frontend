@@ -1,3 +1,5 @@
+"use client";
+
 import { useConnect } from "@/contexts/WalletConnectProvider";
 import { parseIpfsUrl, shortenString } from "@/helpers";
 import { getUser } from "@/helpers/api/user";

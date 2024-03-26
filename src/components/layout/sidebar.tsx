@@ -1,3 +1,5 @@
+"use client";
+
 import { sideMenuList } from "@/config/menu";
 import { useSidebarContext } from "@/contexts/SidebarContext";
 import { Sidebar } from "flowbite-react";

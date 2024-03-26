@@ -1,5 +1,3 @@
-"use client";
-
 import AppLayout from "@/components/layout";
 import type { FC, PropsWithChildren } from "react";
 
@@ -8,3 +6,8 @@ const MintLayout: FC<PropsWithChildren> = function ({ children }) {
 };
 
 export default MintLayout;
+
+export const metadata = {
+  title: "Mint Pixel",
+  description: "Mints pixels for brand",
+};

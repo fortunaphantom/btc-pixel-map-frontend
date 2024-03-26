@@ -77,6 +77,7 @@ export const MapBoard: FC = () => {
             ></area>
           ))}
         </map>
+        <div className="bg-grid absolute left-0 top-0 z-10 h-full w-full" />
       </div>
     </>
   );

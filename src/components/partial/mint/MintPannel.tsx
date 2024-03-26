@@ -1,13 +1,16 @@
+"use client";
+
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import ConfirmModal from "@/components/modal/ConfirmModal";
 import ImageCropModal from "@/components/modal/ImageCropModal";
 import SelectFeeRate from "@/components/modal/SelectFeeRate";
 import { useConnect } from "@/contexts/WalletConnectProvider";
-import { getMintSign } from "@/helpers/api/mint";
+import { getMintPsbt } from "@/helpers/api/mint";
 import { waitForReveal } from "@/helpers/ordinals/waitForReveal";
 import { useFeeRecommended, useSend } from "@/hooks";
 import { Button, FileInput, FloatingLabel, Label } from "flowbite-react";
+import { useRouter } from "next/navigation";
 import { FC, useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { FaEdit } from "react-icons/fa";
@@ -48,6 +51,7 @@ export const MintPanel: FC<Props> = ({
   croppedImage,
   setCroppedImage,
 }) => {
+  const router = useRouter();
   const { address } = useConnect();
   const { send } = useSend();
 
@@ -88,7 +92,7 @@ export const MintPanel: FC<Props> = ({
     //generate mint param
     setActiveStep(0);
     try {
-      mintParam = await getMintSign({
+      mintParam = await getMintPsbt({
         x: rect.x,
         y: rect.y,
         width: rect.width,
@@ -346,7 +350,7 @@ export const MintPanel: FC<Props> = ({
         errorStep={errorStep}
         errorMessage={errorMessage}
         handleRetry={() => handleMint()}
-        handleContinue={() => setConfirmOpen(false)}
+        handleContinue={() => router.push("/")}
         successMessage="Pixel minted successfully"
       />
       <SelectFeeRate

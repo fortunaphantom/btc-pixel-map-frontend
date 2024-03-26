@@ -4,6 +4,7 @@ import { parseIpfsUrl } from "@/helpers";
 import { getMapImage } from "@/helpers/api";
 import { Button } from "flowbite-react";
 import { KonvaEventObject } from "konva/lib/Node";
+import { Line } from "konva/lib/shapes/Line";
 import { FC, useCallback, useEffect, useRef, useState } from "react";
 import { MdOutlineZoomInMap } from "react-icons/md";
 import { RiZoomInFill, RiZoomOutFill } from "react-icons/ri";
@@ -26,6 +27,7 @@ const MapBoard: FC<Props> = ({
   const boardRef = useRef<any>();
   const itemRef = useRef<any>();
   const trRef = useRef<any>();
+  const gridLayerRef = useRef<any>();
   const [zoom, setZoom] = useState<number>(1);
 
   const [startPos, setStartPos] = useState<Position>();
@@ -80,7 +82,6 @@ const MapBoard: FC<Props> = ({
     },
     [actionOn, zoom],
   );
-
   const handleMouseUp = useCallback(
     (e: KonvaEventObject<MouseEvent>) => {
       const pos = e.target.getStage()?.getPointerPosition();
@@ -97,6 +98,56 @@ const MapBoard: FC<Props> = ({
     },
     [actionOn, zoom],
   );
+
+  const handleWheel = useCallback(() => {
+    if (!gridLayerRef?.current) {
+      return;
+    }
+
+    const stepSize = 8;
+
+    const xSize = 1000 * zoom,
+      ySize = 1000 * zoom,
+      xSteps = Math.round(xSize / stepSize),
+      ySteps = Math.round(ySize / stepSize);
+
+    // draw vertical lines
+    for (let i = 0; i <= xSteps; i++) {
+      gridLayerRef.current.add(
+        new Line({
+          x: i * stepSize,
+          points: [0, 0, 0, ySize],
+          stroke: "rgba(107, 114, 122, 0.1)",
+          strokeWidth: 1,
+        }),
+      );
+    }
+    //draw Horizontal lines
+    for (let i = 0; i <= ySteps; i++) {
+      gridLayerRef.current.add(
+        new Line({
+          y: i * stepSize,
+          points: [0, 0, xSize, 0],
+          stroke: "rgba(107, 114, 122, 0.1)",
+          strokeWidth: 1,
+        }),
+      );
+    }
+
+    // // Draw a border around the viewport
+    // gridLayerRef.current.add(
+    //   new Konva.Rect({
+    //     x: viewRect.x1 + 2,
+    //     y: viewRect.y1 + 2,
+    //     width: viewRect.x2 - viewRect.x1 - 4,
+    //     height: viewRect.y2 - viewRect.y1 - 4,
+    //     strokeWidth: 4,
+    //     stroke: "red",
+    //   }),
+    // );
+
+    gridLayerRef.current.batchDraw();
+  }, [zoom]);
 
   useEffect(() => {
     if (startPos && endPos && setRect && onChange) {
@@ -141,6 +192,10 @@ const MapBoard: FC<Props> = ({
   useEffect(() => {
     getMapImage().then((res) => setMapImageUrl(res));
   }, []);
+
+  useEffect(() => {
+    handleWheel();
+  }, [handleWheel]);
 
   return (
     <>
@@ -265,6 +320,7 @@ const MapBoard: FC<Props> = ({
             </>
           )}
         </Layer>
+        <Layer ref={gridLayerRef} />
       </Stage>
     </>
   );

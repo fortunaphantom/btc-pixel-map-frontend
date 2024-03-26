@@ -19,7 +19,7 @@ const ItemDetails: FC<Props> = ({ pixel }) => {
         <div className="flex w-full flex-col gap-2 p-5">
           <div className="flex w-full justify-between">
             Id
-            <span className="text-sm">{shortenString(pixel.id)}</span>
+            <span className="text-sm">{shortenString(pixel.ordinalId)}</span>
           </div>
           <div className="flex w-full justify-between">
             Sat

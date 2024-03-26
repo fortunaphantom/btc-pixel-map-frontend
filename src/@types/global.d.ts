@@ -1,5 +1,6 @@
 type Pixel = {
-  id: string;
+  id: number;
+  ordinalId: string;
   sat: string;
   ownerId: string;
 
